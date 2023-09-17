@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MessagingCorp.Crypto.Asymmetric
+namespace MessagingCorp.Configuration.Helper
 {
-    public interface IAsymmetricEncryption
+    public static class ConfigTypeEvaluator
     {
-        void GenerateNewKeyPair();
+
     }
 }

@@ -16,7 +16,7 @@ namespace MessagingCorp.Utils
 
         public string GenerateNewUserUid()
         {
-            string uid = string.Empty;
+            var uid = string.Empty;
             var isNew = false;
 
             while (!isNew)

@@ -4,10 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MessagingCorp.Crypto.Asymmetric
+namespace MessagingCorp.Configuration.BO
 {
-    public interface IAsymmetricEncryption
+    public class CachingConfiguration : BaseConfiguration
     {
-        void GenerateNewKeyPair();
     }
 }
