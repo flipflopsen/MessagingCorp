@@ -9,13 +9,6 @@ namespace MessagingCorp.Converters
 {
     public static class StaticConverter
     {
-        /// <summary>
-        /// When want to convert e.g. DAO User to normal User, then newObj= Convert>DAOType, UserType>(daoObj);
-        /// </summary>
-        /// <typeparam name="TSource"></typeparam>
-        /// <typeparam name="TTarget"></typeparam>
-        /// <param name="source"></param>
-        /// <returns></returns>
         public static TTarget Convert<TSource, TTarget>(TSource source)
             where TTarget : new()
         {

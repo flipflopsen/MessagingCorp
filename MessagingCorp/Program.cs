@@ -1,8 +1,4 @@
 ﻿using MessagingCorp.Services;
-using MessagingCorp.Utils.Logger;
-using Serilog;
-using Serilog.Events;
-using Serilog.Formatting.Compact;
 
 public class Program
 {

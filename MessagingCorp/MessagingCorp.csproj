@@ -37,4 +37,8 @@
     <Folder Include="Controller\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\MessagingCorp.Common\MessagingCorp.Common.csproj" />
+  </ItemGroup>
+
 </Project>

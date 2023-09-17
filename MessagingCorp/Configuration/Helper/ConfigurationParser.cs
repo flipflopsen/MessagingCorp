@@ -6,7 +6,6 @@ using System.Text.RegularExpressions;
 using MessagingCorp.Utils.Logger;
 using Castle.Core.Internal;
 using MessagingCorp.Configuration.Exceptions;
-using MessagingCorp.Exceptions;
 
 namespace MessagingCorp.Configuration.Helper
 {

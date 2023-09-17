@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MessagingCorp.Exceptions
+namespace MessagingCorp.Common.Generators.Exceptions
 {
     public class UidCreationException : Exception
     {

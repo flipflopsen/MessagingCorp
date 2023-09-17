@@ -1,5 +1,5 @@
 ﻿using Castle.Core.Internal;
-using MessagingCorp.Exceptions;
+using MessagingCorp.Common.Generators.Exceptions;
 using MessagingCorp.Services.API;
 using System;
 using System.Collections.Generic;
