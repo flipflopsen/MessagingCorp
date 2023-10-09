@@ -6,12 +6,14 @@ using MessagingCorp.Configuration;
 using MessagingCorp.Configuration.BO;
 using MessagingCorp.Modules;
 using MessagingCorp.Providers.API;
+using System.Collections.Concurrent;
 
 namespace MessagingCorp.Services
 {
     public class MessageCorpService
     {
-        private IKernel kernel;
+        private readonly ConcurrentDictionary<KernelLevel, IKernel> kernels = new ConcurrentDictionary<KernelLevel, IKernel>();
+        private readonly MessageCorpDriver driver;
 
         private static readonly ILogger Logger = Log.Logger.ForContextWithConfig<MessageCorpService>("./Logs/MessageCorpService.log", true, LogEventLevel.Debug);
 
@@ -21,18 +23,42 @@ namespace MessagingCorp.Services
         #region Initialization
         public void InitializeService()
         {
-            InitializeDI();
+            InitializeDiKernels();
 
             var dbConfig = (DatabaseConfiguration)messageCorpConfiguration!.GetConfiguration(MessageCorpConfigType.Database);
             Logger.Information($"DbConfig, DatabaseName: {dbConfig.DatabaseName}");
-
         }
 
-        private void InitializeDI()
+        private void InitializeDiKernels()
         {
-            kernel = new StandardKernel(new MessageCorpServiceModule(), new MessagingBusModule());
-            messageCorpConfiguration = kernel.Get<IMessageCorpConfiguration>();
-            busProvider = kernel.Get<IMessageBusProvider>();
+            var commonConfigModule = new MessageCorpServiceModule();
+            var commonMessageBusModule = new MessagingBusModule();
+
+            // Happens sync so direct dict access is ok here
+            kernels[KernelLevel.Driver] = new StandardKernel(
+                commonConfigModule,
+                commonMessageBusModule
+                );
+
+            kernels[KernelLevel.Auth] = new StandardKernel(
+                commonConfigModule,
+                new CryptoModule(),
+                new CachingModule(),
+                new DatabaseModule()
+                );
+
+            messageCorpConfiguration = kernels[KernelLevel.Driver].Get<IMessageCorpConfiguration>();
+            busProvider = kernels[KernelLevel.Driver].Get<IMessageBusProvider>();
+        }
+
+        private void InitializeServices()
+        {
+            // Create all the services here with the kernels and create a new "Driver" class, which orchestrates these
+        }
+
+        private void InitializeHttpSever()
+        {
+
         }
 
         #endregion

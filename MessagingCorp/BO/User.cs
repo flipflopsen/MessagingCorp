@@ -18,6 +18,7 @@ namespace MessagingCorp.BO
         public User(string wantedNickname, string? password, int? pin)
         {
             DisplayedName = wantedNickname;
+            _activeLobbyParticipations = new List<string>();
         }
 
         public void SetUserId(string userId)

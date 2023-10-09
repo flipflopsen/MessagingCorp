@@ -12,6 +12,7 @@ namespace MessagingCorp.Configuration
         Caching,
         LoadBalance,
         Encryption,
+        CorpHttp,
         General
     }
 }

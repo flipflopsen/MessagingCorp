@@ -5,7 +5,9 @@ VisualStudioVersion = 17.6.33815.320
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MessagingCorp", "MessagingCorp\MessagingCorp.csproj", "{843ED541-FF23-48B9-BF4E-4B3ED73460C9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessagingCorp.Common", "MessagingCorp.Common\MessagingCorp.Common.csproj", "{F4F940E5-BF5D-4218-84B1-51963DD62C11}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MessagingCorp.Common", "MessagingCorp.Common\MessagingCorp.Common.csproj", "{F4F940E5-BF5D-4218-84B1-51963DD62C11}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessagingCorp.Test", "MessagingCorp.Test\MessagingCorp.Test.csproj", "{814F0794-7932-4072-B6BD-96645E683EEE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{F4F940E5-BF5D-4218-84B1-51963DD62C11}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F4F940E5-BF5D-4218-84B1-51963DD62C11}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F4F940E5-BF5D-4218-84B1-51963DD62C11}.Release|Any CPU.Build.0 = Release|Any CPU
+		{814F0794-7932-4072-B6BD-96645E683EEE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{814F0794-7932-4072-B6BD-96645E683EEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{814F0794-7932-4072-B6BD-96645E683EEE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{814F0794-7932-4072-B6BD-96645E683EEE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

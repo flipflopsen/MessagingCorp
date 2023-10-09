@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MessagingCorp.Crypto.Symmetric;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +9,9 @@ namespace MessagingCorp.Providers.API
 {
     public interface ICryptoProvider
     {
-        string Encrypt(string message);
-        string Decrypt(string cipher);
+        string EncryptSymmetric(EEncryptionStrategySymmetric cryptoStrategy, string uid, string message);
+        string DecryptSymmetric(EEncryptionStrategySymmetric cryptoStrategy, string uid, string message);
+        string EncryptAsymmetric(EEncryptionStrategyAsymmetric cryptoStrategy, string uid, string message);
+        string DecryptAsymmetric(EEncryptionStrategyAsymmetric cryptoStrategy, string uidFrom, string uidTo, string message);
     }
 }

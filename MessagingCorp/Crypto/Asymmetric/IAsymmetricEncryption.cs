@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MessagingCorp.BO;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,6 @@ namespace MessagingCorp.Crypto.Asymmetric
 {
     public interface IAsymmetricEncryption
     {
-        void GenerateNewKeyPair();
+        void GenerateNewKeyPair(User user, int keySize);
     }
 }

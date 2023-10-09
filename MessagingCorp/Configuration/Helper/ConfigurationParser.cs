@@ -4,14 +4,13 @@ using MessagingCorp.Configuration.BO;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using MessagingCorp.Utils.Logger;
-using Castle.Core.Internal;
 using MessagingCorp.Configuration.Exceptions;
 
 namespace MessagingCorp.Configuration.Helper
 {
     public class ConfigurationParser
     {
-        private static readonly ILogger Logger = Log.Logger.ForContextWithConfig<ConfigurationParser>("./Logs/configurationParserLog.log", true, LogEventLevel.Debug);
+        private static readonly ILogger Logger = Log.Logger.ForContextWithConfig<ConfigurationParser>("./Logs/ConfigurationParserLog.log", true, LogEventLevel.Debug);
 
         public BaseConfiguration Parse(string filePath)
         {
@@ -49,6 +48,10 @@ namespace MessagingCorp.Configuration.Helper
                             break;
                         case "LoadBalance":
                             configuration = new LoadBalanceConfiguration();
+                            configuration.ConfigurationName = configName;
+                            break;
+                        case "CorpHttp":
+                            configuration = new CorpHttpConfiguration();
                             configuration.ConfigurationName = configName;
                             break;
                         default:

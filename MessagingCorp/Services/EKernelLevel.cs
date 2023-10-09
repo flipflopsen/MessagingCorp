@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MessagingCorp.Configuration.Helper
+namespace MessagingCorp.Services
 {
-    public static class ConfigTypeEvaluator
+    public enum KernelLevel
     {
-
+        Driver,
+        Auth
     }
 }

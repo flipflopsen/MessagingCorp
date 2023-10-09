@@ -17,12 +17,14 @@ namespace MessagingCorp.Configuration.BO
         private const string ENC_CONF = "Encryption";
         private const string LB_CONF = "LoadBalance";
         private const string CH_CONF = "Caching";
+        private const string HTTP_CONF = "CorpHttp";
         private const string CONFIG_EXTENSION = ".corpconf";
 
         private DatabaseConfiguration? DatabaseConfiguration { get; set; }
         private EncryptionConfiguration? EncryptionConfiguration { get; set; }
         private LoadBalanceConfiguration? LoadBalanceConfiguration { get; set; }
         private CachingConfiguration? CachingConfiguration { get; set; }
+        private CorpHttpConfiguration? CorpHttpConfiguration { get; set; }
 
         public MessagingCorpConfig()
         {
@@ -41,15 +43,34 @@ namespace MessagingCorp.Configuration.BO
         {
             var configFolderPath = Path.Combine(Directory.GetCurrentDirectory(), CONFIG_FOLDER_BASE_NAME);
 
-            return configType switch
+            switch (configType)
             {
-                MessageCorpConfigType.Encryption => ParseConfig(Path.Combine(configFolderPath, ENC_CONF + CONFIG_EXTENSION)) ?? new EncryptionConfiguration(),
-                MessageCorpConfigType.LoadBalance => ParseConfig(Path.Combine(configFolderPath, LB_CONF) + CONFIG_EXTENSION) ?? new LoadBalanceConfiguration(),
-                MessageCorpConfigType.Database => ParseConfig(Path.Combine(configFolderPath, DB_CONF + CONFIG_EXTENSION)) ?? new DatabaseConfiguration(),
-                MessageCorpConfigType.Caching => ParseConfig(Path.Combine(configFolderPath, CH_CONF + CONFIG_EXTENSION)) ?? new CachingConfiguration(),
-                MessageCorpConfigType.General => throw new ConfigChoiceException(),
-                _ => throw new ConfigChoiceException(),
-            };
+                case MessageCorpConfigType.Encryption: 
+                    if (EncryptionConfiguration == null)
+                        EncryptionConfiguration = (EncryptionConfiguration) ParseConfig(Path.Combine(configFolderPath, ENC_CONF + CONFIG_EXTENSION)) ?? new EncryptionConfiguration();
+                    return EncryptionConfiguration;
+                case MessageCorpConfigType.LoadBalance: 
+                    if (LoadBalanceConfiguration == null)
+                        LoadBalanceConfiguration = (LoadBalanceConfiguration) ParseConfig(Path.Combine(configFolderPath, LB_CONF) + CONFIG_EXTENSION) ?? new LoadBalanceConfiguration();
+                    return LoadBalanceConfiguration;
+                case MessageCorpConfigType.Database: 
+                    if (DatabaseConfiguration == null)
+                        DatabaseConfiguration = (DatabaseConfiguration) ParseConfig(Path.Combine(configFolderPath, DB_CONF + CONFIG_EXTENSION)) ?? new DatabaseConfiguration();
+                    return DatabaseConfiguration;
+                case MessageCorpConfigType.Caching: 
+                    if (CachingConfiguration  == null)
+                        CachingConfiguration = (CachingConfiguration) ParseConfig(Path.Combine(configFolderPath, CH_CONF + CONFIG_EXTENSION)) ?? new CachingConfiguration(); 
+                    return CachingConfiguration;
+                case MessageCorpConfigType.CorpHttp: 
+                    if (CorpHttpConfiguration == null)
+                        CorpHttpConfiguration = (CorpHttpConfiguration) ParseConfig(Path.Combine(configFolderPath, HTTP_CONF + CONFIG_EXTENSION)) ?? new CorpHttpConfiguration();
+                    return CorpHttpConfiguration;
+                case MessageCorpConfigType.General: 
+                    throw new ConfigChoiceException();
+                default: 
+                    throw new ConfigChoiceException();
+
+            }
         }
     }
 }
