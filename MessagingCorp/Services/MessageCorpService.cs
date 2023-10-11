@@ -13,7 +13,7 @@ namespace MessagingCorp.Services
     public class MessageCorpService
     {
         private readonly ConcurrentDictionary<KernelLevel, IKernel> kernels = new ConcurrentDictionary<KernelLevel, IKernel>();
-        private readonly MessageCorpDriver driver;
+        private MessageCorpDriver driver;
 
         private static readonly ILogger Logger = Log.Logger.ForContextWithConfig<MessageCorpService>("./Logs/MessageCorpService.log", true, LogEventLevel.Debug);
 
@@ -49,6 +49,7 @@ namespace MessagingCorp.Services
 
             messageCorpConfiguration = kernels[KernelLevel.Driver].Get<IMessageCorpConfiguration>();
             busProvider = kernels[KernelLevel.Driver].Get<IMessageBusProvider>();
+            driver = new MessageCorpDriver(kernels[KernelLevel.Driver]);
         }
 
         private void InitializeServices()
