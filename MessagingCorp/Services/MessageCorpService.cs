@@ -27,6 +27,8 @@ namespace MessagingCorp.Services
 
             var dbConfig = (DatabaseConfiguration)messageCorpConfiguration!.GetConfiguration(MessageCorpConfigType.Database);
             Logger.Information($"DbConfig, DatabaseName: {dbConfig.DatabaseName}");
+
+            InitializeServices();
         }
 
         private void InitializeDiKernels()
@@ -47,28 +49,37 @@ namespace MessagingCorp.Services
                 new DatabaseModule()
                 );
 
+            kernels[KernelLevel.All] = new StandardKernel(
+                commonConfigModule,
+                commonMessageBusModule,
+                new CryptoModule(),
+                new CachingModule(),
+                new DatabaseModule(),
+                new AuthenticationModule(),
+                new UserManagementModule()
+                );
+
             messageCorpConfiguration = kernels[KernelLevel.Driver].Get<IMessageCorpConfiguration>();
             busProvider = kernels[KernelLevel.Driver].Get<IMessageBusProvider>();
-            driver = new MessageCorpDriver(kernels[KernelLevel.Driver]);
+
         }
 
         private void InitializeServices()
         {
             // Create all the services here with the kernels and create a new "Driver" class, which orchestrates these
-        }
 
-        private void InitializeHttpSever()
-        {
-
+            driver = new MessageCorpDriver(kernels[KernelLevel.All]);
         }
 
         #endregion
 
         #region Service Main
 
-        public void StartOperation()
+        public async Task StartOperation()
         {
+            driver.InitializeDriver();
 
+            await driver.RunDriver();
         }
 
         #endregion

@@ -1,4 +1,6 @@
-﻿using MessagingCorp.Database;
+﻿using MessagingCorp.Auth;
+using MessagingCorp.EntityManagement;
+using MessagingCorp.EntityManagement.API;
 using MessagingCorp.Services.API;
 using Ninject.Modules;
 using System;
@@ -9,11 +11,13 @@ using System.Threading.Tasks;
 
 namespace MessagingCorp.Modules
 {
-    public class DatabaseModule : NinjectModule
+    public class UserManagementModule : NinjectModule
     {
+        // needs database and maybe encryption
         public override void Load()
         {
-            this.Bind<IDatabaseAccess>().To<DatabaseAccessMock>();
+            Bind<IUserManagement>().To<UserManagement>();
         }
     }
+
 }

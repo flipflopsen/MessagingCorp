@@ -1,4 +1,5 @@
-﻿using MessagingCorp.Providers.API;
+﻿using MessagingCorp.Caching;
+using MessagingCorp.Providers.API;
 using Ninject.Modules;
 using System;
 using System.Collections.Generic;
@@ -13,7 +14,7 @@ namespace MessagingCorp.Modules
         public override void Load()
         {
             // TODO: Implement provider and good
-            Bind<ICachingProvider>().To<ICachingProvider>();
+            Bind<ICachingProvider>().To<CachingService>();
         }
     }
 }

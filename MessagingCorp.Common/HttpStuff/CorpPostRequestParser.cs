@@ -38,6 +38,11 @@ namespace MessagingCorp.Common.HttpStuff
                 var key = parts[0].Trim();
                 var value = parts[1].Trim();
 
+                if (!value.EndsWith(';'))
+                    return null;
+
+                value = value.Replace(";", "");
+
                 switch (key)
                 {
                     case "UserId":

@@ -4,12 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MessagingCorp.Services
+namespace MessagingCorp.EntityManagement.API
 {
-    public enum KernelLevel
+    public interface ILobbyManagement
     {
-        All,
-        Driver,
-        Auth
     }
 }

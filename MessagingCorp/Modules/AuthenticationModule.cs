@@ -1,4 +1,7 @@
-﻿using Ninject.Modules;
+﻿using MessagingCorp.Auth;
+using MessagingCorp.Providers.API;
+using MessagingCorp.Services.API;
+using Ninject.Modules;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +15,7 @@ namespace MessagingCorp.Modules
         // needs database and maybe encryption
         public override void Load()
         {
-
+            Bind<IAuthenticationGovernment>().To<BaseAuthenticator>();
         }
     }
 }

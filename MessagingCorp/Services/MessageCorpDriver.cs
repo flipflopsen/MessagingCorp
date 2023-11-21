@@ -7,82 +7,75 @@ using Serilog.Events;
 using Serilog;
 using System.Net;
 using MessagingCorp.Utils.Logger;
+using MessagingCorp.Controller;
+using MessagingCorp.Utils;
+using Castle.DynamicProxy.Generators.Emitters.SimpleAST;
+using MessagingCorp.BO.BusMessages;
+using MessagingCorp.Services.API;
+using MessagingCorp.EntityManagement.API;
+using MessagingCorp.EntityManagement;
+using Org.BouncyCastle.Crypto;
 
 namespace MessagingCorp.Services
 {
     public class MessageCorpDriver
     {
-        private static readonly ILogger Logger = Log.Logger.ForContextWithConfig<MessageCorpDriver>("./Logs/MessageCorpDrivedr.log", true, LogEventLevel.Debug);
+        private static readonly ILogger Logger = Log.Logger.ForContextWithConfig<MessageCorpDriver>("./Logs/MessageCorpDriver.log", true, LogEventLevel.Debug);
 
         private IKernel _kernel;
 
-        public static MessageCorpDriver Instance { get; private set; }
-
-        private static CorpHttpServer corpHttpServer;
+        private MessageCorpController controller;
+        private IAuthenticationGovernment? authenticator;
         private IMessageCorpConfiguration? messageCorpConfiguration;
         private IMessageBusProvider? busPovider;
+        private IUserManagement? userManagement;
 
         public MessageCorpDriver(IKernel kernel)
         {
             _kernel = kernel;
-            Instance = new MessageCorpDriver(kernel);
             messageCorpConfiguration = _kernel.Get<IMessageCorpConfiguration>();
             busPovider = _kernel.Get<IMessageBusProvider>();
+            authenticator = _kernel.Get<IAuthenticationGovernment>();
+            userManagement = _kernel.Get<IUserManagement>();
+
+            controller = new MessageCorpController();
         }
 
         #region Initialization
         public void InitializeDriver()
         {
-            InitializeCorpHttp();
+            var config = (CorpHttpConfiguration)messageCorpConfiguration!.GetConfiguration(MessageCorpConfigType.CorpHttp);
+            controller.InitializeCorpHttp(busPovider, config);
         }
 
-        private void InitializeCorpHttp()
+        public async Task RunDriver()
         {
-            var config = (CorpHttpConfiguration)messageCorpConfiguration.GetConfiguration(MessageCorpConfigType.CorpHttp);
-            string[] endpoints = new string[]
-            {
-                $"http://{config.CorpHttpIp}:{config.CorpHttpPort}",
-                $"http://{config.CorpHttpIp}:{config.CorpHttpPort}/genPoster",
-                $"http://{config.CorpHttpIp}:{config.CorpHttpPort}/genGetter"
-            };
+            busPovider!.GetMessageBus().Subscribe<RegisterUserMessage>(async (message, tok) => await RegisterUser(message));
 
-            corpHttpServer.RegisterEndpoint($"http://{config.CorpHttpIp}:{config.CorpHttpPort}", GenericHandler);
-            corpHttpServer.RegisterEndpoint($"http://{config.CorpHttpIp}:{config.CorpHttpPort}/genGetter", GenericGetHandler);
-            corpHttpServer.RegisterEndpoint($"http://{config.CorpHttpIp}:{config.CorpHttpPort}/genPoster", GenericPostHandler);
-            
-        }
-        #endregion
-
-        #region HttpHandlers
-        private Task<HttpListenerResponse> GenericHandler(HttpListenerRequest request)
-        {
-            Logger.Warning($"[MessageCorpDriver] > Detected unwanted visit from: {request.RemoteEndPoint.Address}");
-            return Task.FromResult<HttpListenerResponse>(null!);
-        }
-
-        private async Task<HttpListenerResponse> GenericGetHandler(HttpListenerRequest request)
-        {
-
-            return null;
-        }
-
-        private async Task<HttpListenerResponse> GenericPostHandler(HttpListenerRequest request)
-        {
-
-            return null;
+            await controller.RunCorpHttp();
         }
 
         #endregion
 
         #region Actions
 
-        private void RegisterUser()
+        private async Task RegisterUser(RegisterUserMessage message)
         {
-
+            Logger.Information("Got registerUsermessage for user: " + message.UserName);
+            userManagement!.AddUser(message.UserName, message.Password);
+            Logger.Information("going to register user..");
+            
         }
-        private void Login()
+        private async Task Login()
         {
-
+            /*
+            Logger.Information("Got registerUsermessage for user: " + message.UserName);
+            if (authenticator!.AuthenticateUser(message.UserName, message.Password))
+            {
+                userManagement.AddUser(message.UserName, message.Password);
+                Logger.Information("going to register user..");
+            }
+            */
         }
 
         private void SendMessage()

@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MessagingCorp.Services.API
+namespace MessagingCorp.BO.BusMessages
 {
-    public interface ILobbyManagement
+    public class SendMessage
     {
     }
 }
