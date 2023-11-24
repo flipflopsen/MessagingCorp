@@ -10,16 +10,13 @@ namespace MessagingCorp.Database
 {
     public class DatabaseAccessMock : IDatabaseAccess
     {
-        private readonly Dictionary<string, string> users = new Dictionary<string, string>()
-        {
-            { "123", "321" }
-        };
+        private readonly Dictionary<string, User> users = new Dictionary<string, User>();
 
         public DatabaseAccessMock() { }
 
-        public void AddUser(string uid, string pass)
+        public void AddUser(string uid, string username, string pass)
         {
-            users.Add(uid, pass);
+            users.Add(uid, new User(uid, username, pass, 0));
         }
 
         public void RemoveUser(string uid) 
@@ -28,18 +25,18 @@ namespace MessagingCorp.Database
         }
         public User GetUser(string uid)
         {
-            return new User(uid, users[uid], 123);
+            return users[uid];
         }
         public bool AuthenticateUser(string uid, string password)
         {
             if (!users.ContainsKey(uid))
                 return false;
-            return users[uid] == password;
+            return users[uid].Password! == password;
         }
 
         public bool IsUidExistent(string uid)
         {
-            return true;
+            return users.ContainsKey(uid);
         }
     }
 }

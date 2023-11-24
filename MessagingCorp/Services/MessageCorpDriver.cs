@@ -62,7 +62,7 @@ namespace MessagingCorp.Services
         private async Task RegisterUser(RegisterUserMessage message)
         {
             Logger.Information("Got registerUsermessage for user: " + message.UserName);
-            userManagement!.AddUser(message.UserName, message.Password);
+            userManagement!.AddUser(message.Uid, message.UserName, message.Password);
             Logger.Information("going to register user..");
             
         }

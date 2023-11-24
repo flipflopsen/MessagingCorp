@@ -14,10 +14,12 @@ namespace MessagingCorp.Common.HttpStuff
         private static readonly ILogger Logger = Log.Logger.ForContextWithConfig<CorpPostRequestParser>("./Logs/CorpHttpServer.log", true, LogEventLevel.Debug);
 
         private readonly string? challenge;
+        private readonly string? secConst;
 
-        public CorpPostRequestParser(string challengeIn)
+        public CorpPostRequestParser(string challengeIn, string constantIn)
         {
             challenge = challengeIn;
+            secConst = constantIn;
         }
 
         public CorpPostRequestFormat? Parse(string contents)
@@ -77,7 +79,8 @@ namespace MessagingCorp.Common.HttpStuff
 
         private bool ValidateAdditionalDataEnding(string additionalData)
         {
-            return true;
+            var split = additionalData.Split(';');
+            return split[split.Length - 1].Equals("Challenge:::SomeMessageCorpConstant:::Challenge");
         }
     }
 }

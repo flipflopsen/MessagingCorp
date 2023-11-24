@@ -9,7 +9,7 @@ namespace MessagingCorp.EntityManagement.API
 {
     public interface IUserManagement
     {
-        void AddUser(string uid, string password);
+        void AddUser(string uid, string username, string password);
         void RemoveUser(string uid);
         User GetUser(string uid);
     }

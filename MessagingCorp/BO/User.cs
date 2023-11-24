@@ -9,14 +9,17 @@ namespace MessagingCorp.BO
 {
     public class User
     {
+        // todo: profilbild
+
         private string _userId;
         public string DisplayedName { get; set; }
 
         private readonly List<string> _activeLobbyParticipations;
-        private readonly string? _password;
+        public string? Password;
 
-        public User(string wantedNickname, string? password, int? pin)
+        public User(string uid, string wantedNickname, string? password, int? pin)
         {
+            _userId = uid;
             DisplayedName = wantedNickname;
             _activeLobbyParticipations = new List<string>();
         }
@@ -28,7 +31,7 @@ namespace MessagingCorp.BO
 
         public bool ValidateUserIntegrity()
         {
-            return !(_userId.IsNullOrEmpty() && DisplayedName.IsNullOrEmpty() && _password.IsNullOrEmpty());
+            return !(_userId.IsNullOrEmpty() && DisplayedName.IsNullOrEmpty() && Password.IsNullOrEmpty());
         }
     }
 }

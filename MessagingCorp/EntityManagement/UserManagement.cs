@@ -20,10 +20,10 @@ namespace MessagingCorp.EntityManagement
             db = kernel.Get<IDatabaseAccess>();
         }
 
-        public void AddUser(string uid, string password)
+        public void AddUser(string uid, string username, string password)
         {
             Logger.Information("Adding user: " + uid);
-            db.AddUser(uid, password);
+            db.AddUser(uid, username, password);
         }
 
         public User GetUser(string uid)

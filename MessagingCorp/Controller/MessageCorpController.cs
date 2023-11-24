@@ -2,6 +2,7 @@
 using MessagingCorp.Common.HttpStuff;
 using MessagingCorp.Configuration.BO;
 using MessagingCorp.Providers.API;
+using MessagingCorp.Utils;
 using MessagingCorp.Utils.Logger;
 using Serilog;
 using Serilog.Events;
@@ -13,6 +14,9 @@ namespace MessagingCorp.Controller
     {
         private static readonly ILogger Logger = Log.Logger.ForContextWithConfig<MessageCorpController>("./Logs/MessageCorpDriver.log", true, LogEventLevel.Debug);
 
+        private const string CHALLENGE = "Challenge";
+        private const string SECURITY_CONSTANT = "SomeMessageCorpConstant";
+
         private CorpHttpServer corpHttpServer;
         private CorpPostRequestParser postParser;
         private IMessageBusProvider bus;
@@ -20,7 +24,7 @@ namespace MessagingCorp.Controller
         public MessageCorpController() 
         { 
             corpHttpServer = new CorpHttpServer();
-            postParser = new CorpPostRequestParser("123");
+            postParser = new CorpPostRequestParser(CHALLENGE, SECURITY_CONSTANT);
         }
         public void InitializeCorpHttp(IMessageBusProvider bus, CorpHttpConfiguration config)
         {
@@ -69,7 +73,19 @@ namespace MessagingCorp.Controller
 
                     switch (reqForm!.Action)
                     {
-                        case "RegisterUser": await bus!.GetMessageBus().Publish(new RegisterUserMessage(reqForm.UserId, reqForm.AdditionalData)); break;
+                        case "RegisterUser":
+                            {
+                                var cleanData = RemoveVerificationFromAdditionalData(reqForm.AdditionalData);
+                                var usernamePasswordSplit = cleanData.Split(';');
+
+                                await bus!.GetMessageBus().Publish(
+                                    new RegisterUserMessage(
+                                        UserIdGenerator.GenerateNewUserUid(),
+                                        usernamePasswordSplit[0], 
+                                        usernamePasswordSplit[1]));
+
+                                break;
+                            }
                     }
                 }
             }
@@ -81,6 +97,18 @@ namespace MessagingCorp.Controller
 
         #endregion
 
+        private string RemoveVerificationFromAdditionalData(string additionalData) 
+        {
+            // access challenge str
+            var challenge = CHALLENGE;
+
+            // access other security constant
+            var securityConstant = SECURITY_CONSTANT;
+
+            var str = challenge + ":::" + securityConstant + ":::" + challenge;
+
+            return additionalData.Replace(str, "");
+        }
 
 
     }

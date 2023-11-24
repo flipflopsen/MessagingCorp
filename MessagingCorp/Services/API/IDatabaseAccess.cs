@@ -12,7 +12,7 @@ namespace MessagingCorp.Services.API
         bool IsUidExistent(string uid);
         bool AuthenticateUser(string uid, string password);
 
-        public void AddUser(string uid, string pass);
+        public void AddUser(string uid, string username, string pass);
 
         public void RemoveUser(string uid);
 
