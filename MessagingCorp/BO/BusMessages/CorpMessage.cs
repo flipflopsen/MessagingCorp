@@ -1,26 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MessagingCorp.Utils;
 
 namespace MessagingCorp.BO.BusMessages
 {
     public class CorpMessage
     {
-        private long _from;
-        private long _to;
+        public string OriginatorUserId { get; set; } = string.Empty;
+        public string TargetUserId { get; set; } = string.Empty;
 
-        private bool _IsSymmetricEncrypted = false;
-        private bool _GotAsymmetricEncrypted = false;
+        public Utils.Action Action { get; set; }
+        public bool IsSymm {  get; set; }
+        public bool IsAsymm {  get; set; }
 
-        // Let's see later
-        private byte[] _data;
-        private string contents;
+        public string Password { get; set; } = string.Empty;
+        public string Challenge { get; set; } = string.Empty;
 
-        public CorpMessage()
-        {
+        public string LobbyId { get; set; } = string.Empty;
+        public string Message { get; set; } = string.Empty;
 
-        }
+        public string AdditionalData { get; set; } = string.Empty;
     }
 }

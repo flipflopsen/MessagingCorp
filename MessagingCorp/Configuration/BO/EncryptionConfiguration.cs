@@ -8,5 +8,7 @@ namespace MessagingCorp.Configuration.BO
 {
     public class EncryptionConfiguration : BaseConfiguration
     {
+        public string RequestSecurityChallenge { get; set; }
+        public string RequestSecurityConstant {  get; set; }
     }
 }

@@ -1,29 +1,44 @@
-﻿using Ninject;
-using SurrealDB.Configuration;
-using SurrealDB.Driver.Rpc;
+﻿using MessagingCorp.BO;
+using MessagingCorp.Services.API;
+using Microsoft.Extensions.DependencyInjection;
+using Ninject;
+using SurrealDb;
+using SurrealDb.Net;
 
 namespace MessagingCorp.Database
 {
-    public class DatabaseAccess
+    public class DatabaseAccess : IDatabaseAccess
     {
-        [Inject]
-        private Config _cfg;
+        private SurrealDbClient _client;
 
-        private DatabaseRpc _dbRpc;
-
-        public DatabaseAccess(Config config)
+        public DatabaseAccess(SurrealDbOptions options)
         {
-            _cfg = config;
-            _dbRpc = new DatabaseRpc(_cfg);
+            _client = new SurrealDbClient(options);
         }
 
-        public async Task Connect()
+        public void AddUser(string uid, string username, string pass)
         {
-            if (_dbRpc == null)
-                return;
-            await _dbRpc.Open();
+            throw new NotImplementedException();
         }
 
+        public bool AuthenticateUser(string uid, string password)
+        {
+            throw new NotImplementedException();
+        }
 
+        public User GetUser(string uid)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool IsUidExistent(string uid)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RemoveUser(string uid)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

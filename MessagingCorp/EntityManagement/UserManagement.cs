@@ -13,11 +13,14 @@ namespace MessagingCorp.EntityManagement
     public class UserManagement : IUserManagement
     {
         private static readonly ILogger Logger = Log.Logger.ForContextWithConfig<MessageCorpDriver>("./Logs/MessageCorpDriver.log", true, LogEventLevel.Debug);
+
         private readonly IDatabaseAccess db;
 
-        public UserManagement(IKernel kernel) 
-        { 
-            db = kernel.Get<IDatabaseAccess>();
+        [Inject]
+
+        public UserManagement(IDatabaseAccess db) 
+        {
+            this.db = db;
         }
 
         public void AddUser(string uid, string username, string password)

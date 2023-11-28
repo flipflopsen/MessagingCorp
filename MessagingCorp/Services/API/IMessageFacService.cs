@@ -4,12 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MessagingCorp.Services
+namespace MessagingCorp.Services.API
 {
-    public enum KernelLevel
+    public interface IMessageFacService
     {
-        Driver,
-        Auth,
-        None
+        void Test(string msg);
     }
 }

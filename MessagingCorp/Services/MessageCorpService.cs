@@ -7,69 +7,88 @@ using MessagingCorp.Configuration.BO;
 using MessagingCorp.Modules;
 using MessagingCorp.Providers.API;
 using System.Collections.Concurrent;
+using Autofac;
+using MessagingCorp.EntityManagement;
+using MessagingCorp.EntityManagement.API;
 
 namespace MessagingCorp.Services
 {
     public class MessageCorpService
     {
+        private static IContainer Container { get; set; }
+
         private readonly ConcurrentDictionary<KernelLevel, IKernel> kernels = new ConcurrentDictionary<KernelLevel, IKernel>();
-        private MessageCorpDriver driver;
+        private MessageCorpDriver? driver;
 
         private static readonly ILogger Logger = Log.Logger.ForContextWithConfig<MessageCorpService>("./Logs/MessageCorpService.log", true, LogEventLevel.Debug);
 
         private IMessageCorpConfiguration? messageCorpConfiguration;
-        private IMessageBusProvider? busProvider;
+
+        private bool _isInitialized = false;
 
         #region Initialization
-        public void InitializeService()
+        public async Task InitializeService()
         {
-            InitializeDiKernels();
+            InitializeDiKernels(KernelLevel.Driver);
 
             var dbConfig = (DatabaseConfiguration)messageCorpConfiguration!.GetConfiguration(MessageCorpConfigType.Database);
             Logger.Information($"DbConfig, DatabaseName: {dbConfig.DatabaseName}");
 
-            InitializeServices();
+            await InitializeServices();
         }
 
-        private void InitializeDiKernels()
+        #region DI-Init
+
+        private void InitializeDiKernels(KernelLevel kernelLevel)
         {
-            var commonConfigModule = new MessageCorpServiceModule();
-            var commonMessageBusModule = new MessagingBusModule();
+            var commonServiceModule = new MessageCorpServiceModule();
 
-            // Happens sync so direct dict access is ok here
-            kernels[KernelLevel.Driver] = new StandardKernel(
-                commonConfigModule,
-                commonMessageBusModule
-                );
+            switch (kernelLevel)
+            {
+                case KernelLevel.Auth:
+                    {
+                        kernels[KernelLevel.Auth] = new StandardKernel(
+                            commonServiceModule,
+                            new CryptoModule(),
+                            new CachingModule(),
+                            new DatabaseModule()
+                        );
+                        break;
+                    }
+                case KernelLevel.Driver:
+                    {
+                        kernels[KernelLevel.Driver] = new StandardKernel(
+                            commonServiceModule,
+                            new CryptoModule(),
+                            new CachingModule(),
+                            new DatabaseModule(),
+                            new AuthenticationModule(),
+                            new UserManagementModule()
+                        );
 
-            kernels[KernelLevel.Auth] = new StandardKernel(
-                commonConfigModule,
-                new CryptoModule(),
-                new CachingModule(),
-                new DatabaseModule()
-                );
-
-            kernels[KernelLevel.All] = new StandardKernel(
-                commonConfigModule,
-                commonMessageBusModule,
-                new CryptoModule(),
-                new CachingModule(),
-                new DatabaseModule(),
-                new AuthenticationModule(),
-                new UserManagementModule()
-                );
+                        break;
+                    }
+            }
 
             messageCorpConfiguration = kernels[KernelLevel.Driver].Get<IMessageCorpConfiguration>();
-            busProvider = kernels[KernelLevel.Driver].Get<IMessageBusProvider>();
-
         }
+        #endregion
 
-        private void InitializeServices()
+        #region Service-Init
+        private async Task InitializeServices()
         {
             // Create all the services here with the kernels and create a new "Driver" class, which orchestrates these
 
-            driver = new MessageCorpDriver(kernels[KernelLevel.All]);
+            // Driver init
+            driver = kernels[KernelLevel.Driver].Get<MessageCorpDriver>();
+            driver.InitializeDriver();
+            await driver.RunDriver();
+
+
+            _isInitialized = true;
         }
+
+        #endregion
 
         #endregion
 
@@ -77,7 +96,10 @@ namespace MessagingCorp.Services
 
         public async Task StartOperation()
         {
-            driver.InitializeDriver();
+            if (!_isInitialized)
+                throw new InvalidOperationException("Service wasnt properly initialized!");
+
+            driver!.InitializeDriver();
 
             await driver.RunDriver();
         }

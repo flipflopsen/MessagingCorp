@@ -1,37 +1,49 @@
 ﻿using MessagingCorp.BO.BusMessages;
 using MessagingCorp.Common.HttpStuff;
+using MessagingCorp.Configuration;
 using MessagingCorp.Configuration.BO;
 using MessagingCorp.Providers.API;
+using MessagingCorp.Services.API;
 using MessagingCorp.Utils;
+using MessagingCorp.Utils.Converters;
 using MessagingCorp.Utils.Logger;
+using Ninject;
 using Serilog;
 using Serilog.Events;
 using System.Net;
 
 namespace MessagingCorp.Controller
 {
-    public class MessageCorpController
+    public class MessageCorpController : IMessageCorpController
     {
         private static readonly ILogger Logger = Log.Logger.ForContextWithConfig<MessageCorpController>("./Logs/MessageCorpDriver.log", true, LogEventLevel.Debug);
 
-        private const string CHALLENGE = "Challenge";
-        private const string SECURITY_CONSTANT = "SomeMessageCorpConstant";
+        private readonly IKernel _kernel;
+        private readonly IMessageBusProvider bus;
 
         private CorpHttpServer corpHttpServer;
         private CorpPostRequestParser postParser;
-        private IMessageBusProvider bus;
 
-        public MessageCorpController() 
-        { 
-            corpHttpServer = new CorpHttpServer();
-            postParser = new CorpPostRequestParser(CHALLENGE, SECURITY_CONSTANT);
-        }
-        public void InitializeCorpHttp(IMessageBusProvider bus, CorpHttpConfiguration config)
+        private string challenge = "Challenge";
+        private string securityConstant = "SomeMessageCorpConstant";
+
+        public MessageCorpController(IKernel kernel) 
         {
-            this.bus = bus;
-            corpHttpServer.RegisterEndpoint($"http://{config.CorpHttpIp}:{config.CorpHttpPort}/", GenericHandler);
-            corpHttpServer.RegisterEndpoint($"http://{config.CorpHttpIp}:{config.CorpHttpPort}/genGetter/", GenericGetHandler);
-            corpHttpServer.RegisterEndpoint($"http://{config.CorpHttpIp}:{config.CorpHttpPort}/genPoster/", GenericPostHandler);
+            _kernel = kernel;
+            bus = kernel.Get<IMessageBusProvider>();
+
+            var encConfig = (EncryptionConfiguration)_kernel.Get<IMessageCorpConfiguration>().GetConfiguration(MessageCorpConfigType.Encryption);
+            challenge = encConfig.RequestSecurityChallenge;
+            securityConstant = encConfig.RequestSecurityConstant;
+
+            corpHttpServer = new CorpHttpServer();
+            postParser = new CorpPostRequestParser(challenge, securityConstant);
+
+            var httpConfig = (CorpHttpConfiguration)_kernel.Get<IMessageCorpConfiguration>().GetConfiguration(MessageCorpConfigType.CorpHttp);
+            corpHttpServer.RegisterEndpoint($"http://{httpConfig.CorpHttpIp}:{httpConfig.CorpHttpPort}/", GenericHandler);
+            corpHttpServer.RegisterEndpoint($"http://{httpConfig.CorpHttpIp}:{httpConfig.CorpHttpPort}/genGetter/", GenericGetHandler);
+            corpHttpServer.RegisterEndpoint($"http://{httpConfig.CorpHttpIp}:{httpConfig.CorpHttpPort}/genPoster/", GenericPostHandler);
+
         }
 
         public async Task RunCorpHttp()
@@ -70,23 +82,17 @@ namespace MessagingCorp.Controller
                 {
                     var content = reader.ReadToEnd();
                     var reqForm = postParser.Parse(content);
+                    var cleanData = RemoveVerificationFromAdditionalData(reqForm.AdditionalData);
 
-                    switch (reqForm!.Action)
+                    var msg = new CorpMessage()
                     {
-                        case "RegisterUser":
-                            {
-                                var cleanData = RemoveVerificationFromAdditionalData(reqForm.AdditionalData);
-                                var usernamePasswordSplit = cleanData.Split(';');
+                        OriginatorUserId = UserIdGenerator.GenerateNewUserUid(),
+                        AdditionalData = cleanData,
+                        Action = ActionToEnumConverter.ConvertToAction(reqForm!.Action)
+                    };
 
-                                await bus!.GetMessageBus().Publish(
-                                    new RegisterUserMessage(
-                                        UserIdGenerator.GenerateNewUserUid(),
-                                        usernamePasswordSplit[0], 
-                                        usernamePasswordSplit[1]));
+                    await bus!.GetMessageBus().Publish(msg);
 
-                                break;
-                            }
-                    }
                 }
             }
             response.StatusCode = 200;
@@ -100,16 +106,15 @@ namespace MessagingCorp.Controller
         private string RemoveVerificationFromAdditionalData(string additionalData) 
         {
             // access challenge str
-            var challenge = CHALLENGE;
+            var challenge = this.challenge;
 
             // access other security constant
-            var securityConstant = SECURITY_CONSTANT;
+            var securityConstant = this.securityConstant;
 
             var str = challenge + ":::" + securityConstant + ":::" + challenge;
 
             return additionalData.Replace(str, "");
         }
-
 
     }
 }

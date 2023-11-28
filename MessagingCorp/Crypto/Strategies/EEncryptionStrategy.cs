@@ -16,7 +16,6 @@ namespace MessagingCorp.Crypto.Symmetric
         AES_SIV,
         CHACHA_TWENTY,
         SERPENT,
-
     }
 
     public enum EEncryptionStrategyAsymmetric

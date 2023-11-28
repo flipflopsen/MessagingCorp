@@ -9,12 +9,14 @@ using System.Net;
 using MessagingCorp.Utils.Logger;
 using MessagingCorp.Controller;
 using MessagingCorp.Utils;
-using Castle.DynamicProxy.Generators.Emitters.SimpleAST;
 using MessagingCorp.BO.BusMessages;
 using MessagingCorp.Services.API;
 using MessagingCorp.EntityManagement.API;
 using MessagingCorp.EntityManagement;
 using Org.BouncyCastle.Crypto;
+using MessagingCorp.Utils.Converters;
+using System.Text;
+using MessagingCorp.Crypto.Symmetric;
 
 namespace MessagingCorp.Services
 {
@@ -22,35 +24,38 @@ namespace MessagingCorp.Services
     {
         private static readonly ILogger Logger = Log.Logger.ForContextWithConfig<MessageCorpDriver>("./Logs/MessageCorpDriver.log", true, LogEventLevel.Debug);
 
-        private IKernel _kernel;
+        private readonly IMessageCorpController controller;
+        private readonly IAuthenticationGovernment authenticator;
+        private readonly IMessageCorpConfiguration? messageCorpConfiguration;
+        private readonly IMessageBusProvider? busPovider;
+        private readonly IUserManagement? userManagement;
 
-        private MessageCorpController controller;
-        private IAuthenticationGovernment? authenticator;
-        private IMessageCorpConfiguration? messageCorpConfiguration;
-        private IMessageBusProvider? busPovider;
-        private IUserManagement? userManagement;
 
-        public MessageCorpDriver(IKernel kernel)
+        [Inject]
+        public MessageCorpDriver(
+            IAuthenticationGovernment authenticator,
+            IMessageCorpConfiguration messageCorpConfiguration,
+            IMessageBusProvider busPovider,
+            IUserManagement userManagement,
+            IMessageCorpController controller
+            )
         {
-            _kernel = kernel;
-            messageCorpConfiguration = _kernel.Get<IMessageCorpConfiguration>();
-            busPovider = _kernel.Get<IMessageBusProvider>();
-            authenticator = _kernel.Get<IAuthenticationGovernment>();
-            userManagement = _kernel.Get<IUserManagement>();
-
-            controller = new MessageCorpController();
+            this.authenticator = authenticator;
+            this.messageCorpConfiguration = messageCorpConfiguration;
+            this.busPovider = busPovider;
+            this.userManagement = userManagement;
+            this.controller = controller;
         }
 
         #region Initialization
         public void InitializeDriver()
         {
-            var config = (CorpHttpConfiguration)messageCorpConfiguration!.GetConfiguration(MessageCorpConfigType.CorpHttp);
-            controller.InitializeCorpHttp(busPovider, config);
+            //controller.InitializeCorpHttp();
         }
 
         public async Task RunDriver()
         {
-            busPovider!.GetMessageBus().Subscribe<RegisterUserMessage>(async (message, tok) => await RegisterUser(message));
+            busPovider!.GetMessageBus().Subscribe<CorpMessage>(async (message, tok) => await HandleCorpMessage(message));
 
             await controller.RunCorpHttp();
         }
@@ -59,58 +64,50 @@ namespace MessagingCorp.Services
 
         #region Actions
 
-        private async Task RegisterUser(RegisterUserMessage message)
+        private async Task HandleCorpMessage(CorpMessage message)
         {
-            Logger.Information("Got registerUsermessage for user: " + message.UserName);
-            userManagement!.AddUser(message.Uid, message.UserName, message.Password);
-            Logger.Information("going to register user..");
-            
-        }
-        private async Task Login()
-        {
-            /*
-            Logger.Information("Got registerUsermessage for user: " + message.UserName);
-            if (authenticator!.AuthenticateUser(message.UserName, message.Password))
+            if (message.Action == Utils.Action.Invalid)
             {
-                userManagement.AddUser(message.UserName, message.Password);
-                Logger.Information("going to register user..");
+                Logger.Error("[MessageCorpDriver] > Action field from CorpMessage was invalid in handler!");
+                throw new NullReferenceException("Action field from CorpMessage was null in handler!");
             }
-            */
-        }
 
-        private void SendMessage()
-        {
+            switch (message.Action)
+            {
+                case Utils.Action.RegisterUser:
+                    {
+                        var usernamePasswordSplit = message.AdditionalData.Split(";");
+                        Logger.Information("Got registerUsermessage for user: " + message);
+                        userManagement!.AddUser(message.OriginatorUserId!, usernamePasswordSplit[0], usernamePasswordSplit[1]);
+                        Logger.Information("going to register user..");
+                        break;
+                    }
+                case Utils.Action.LoginUser:
+                    {
+                        Logger.Information("Got registerUsermessage for user: " + message.OriginatorUserId);
+                        if (authenticator!.AuthenticateUser(message.OriginatorUserId, message.Password))
+                        {
 
-        }
+                        }
+                        break;
+                    }
+                case Utils.Action.SendMessage:
+                    {
+                        byte[] testKey = Encoding.UTF8.GetBytes("01234567890123456789012345678901");
+                        byte[] testIV = Encoding.UTF8.GetBytes("0123456789012345");
+                        Logger.Information("Got sendMessage for user: " + message.OriginatorUserId);
+                        var aes = new AES(EEncryptionStrategySymmetric.AES_GCM);
+                        var originalMessage = Convert.ToBase64String(Encoding.UTF8.GetBytes("Hello, this is a test message!"));
 
-        private void CreateLobby()
-        {
+                        // Act
+                        var encryptedMessage = aes.EncryptMessage(originalMessage, testKey, testIV);
+                        var decryptedMessage = aes.DecryptMessage(encryptedMessage, testKey, testIV);
 
-        }
+                        
+                        break;
 
-        private void JoinLobby()
-        {
-
-        }
-
-        private void PurgeUser()
-        {
-
-        }
-
-        private void UpdateChatMessages()
-        {
-
-        }
-
-        private void ChangeSymEncryptionMethod()
-        {
-
-        }
-
-        private void ChangeAsymEncryptionMethod()
-        {
-
+                    }
+            }
         }
 
         #endregion

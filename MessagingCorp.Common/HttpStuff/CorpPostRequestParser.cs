@@ -16,6 +16,7 @@ namespace MessagingCorp.Common.HttpStuff
         private readonly string? challenge;
         private readonly string? secConst;
 
+        //todo: pass kernel and config
         public CorpPostRequestParser(string challengeIn, string constantIn)
         {
             challenge = challengeIn;
@@ -62,9 +63,18 @@ namespace MessagingCorp.Common.HttpStuff
                         requestFormat.Action = value;
                         break;
                     case "AdditionalData":
+                        try
+                        {
+                            value = Encoding.UTF8.GetString(Convert.FromBase64String(value));
+                        }
+                        catch (Exception e)
+                        {
+                            Logger.Warning("[CorpPostRequestParser] > Invalid b64 in additional data detected!");
+                            return null;
+                        }
                         if (!ValidateAdditionalDataEnding(value))
                         {
-                            Logger.Warning("[CorpPostRequestParser] > Failed to validate ending of additional data!");
+                            Logger.Warning("[CorpPostRequestParser] > Failed to security constant of additional data!");
                             return null;
                         }
                         requestFormat.AdditionalData = value;
@@ -80,7 +90,7 @@ namespace MessagingCorp.Common.HttpStuff
         private bool ValidateAdditionalDataEnding(string additionalData)
         {
             var split = additionalData.Split(';');
-            return split[split.Length - 1].Equals("Challenge:::SomeMessageCorpConstant:::Challenge");
+            return split[split.Length - 1].Equals($"{challenge}:::{secConst}:::{challenge}");
         }
     }
 }
