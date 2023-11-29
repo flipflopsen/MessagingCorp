@@ -1,6 +1,8 @@
 # MessagingCorp - A Transparent Messenger
 
-**Todo:** Insert compelling text and reasoning here, explaining what makes MessagingCorp cool and outlining its vision.
+**What is this about:**
+  
+This project focuses on implementing a Messenger Service with fully user-controllable, switchable, and cascading encryption options, encompassing both asymmetric and symmetric encryption methods. The primary goal is to create a platform for educational purposes, providing an environment to explore new technologies, discover novel concepts, and experience different facets of programming that may not be encountered in everyday work.
 
 ## Setup
 
