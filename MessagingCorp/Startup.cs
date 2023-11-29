@@ -1,5 +1,4 @@
 ﻿using MessagingCorp.ApplicationStartup;
-using MessagingCorp.Services;
 
 namespace MessagingCorp
 {

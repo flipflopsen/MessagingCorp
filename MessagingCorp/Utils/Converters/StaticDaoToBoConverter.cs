@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MessagingCorp.Utils.Converters
+﻿namespace MessagingCorp.Utils.Converters
 {
     public class StaticDaoToBoConverter<TSource, TDestination>
     where TSource : class

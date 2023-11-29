@@ -13,7 +13,7 @@ using Serilog.Events;
 using System.Net;
 using System.Text;
 
-namespace MessagingCorp.Controller
+namespace MessagingCorp.Services.Core
 {
     public class MessageCorpController : IMessageCorpController
     {
@@ -27,7 +27,7 @@ namespace MessagingCorp.Controller
         private readonly string challenge;
         private readonly string securityConstant;
 
-        public MessageCorpController(IKernel kernel) 
+        public MessageCorpController(IKernel kernel)
         {
             bus = kernel.Get<IMessageBusProvider>();
 
@@ -87,7 +87,7 @@ namespace MessagingCorp.Controller
 
                     var msg = new CorpMessage()
                     {
-                        OriginatorUserId = UserIdGenerator.GenerateNewUserUid(),
+                        OriginatorUserId = IdGenerator.GenerateNewUserUid(),
                         AdditionalData = cleanData,
                         Action = ActionToEnumConverter.ConvertToAction(reqForm!.Action)
                     };
@@ -122,7 +122,7 @@ namespace MessagingCorp.Controller
 
         #endregion
 
-        private string RemoveVerificationFromAdditionalData(string additionalData) 
+        private string RemoveVerificationFromAdditionalData(string additionalData)
         {
             // access challenge str
             var challenge = this.challenge;

@@ -1,27 +1,29 @@
-﻿namespace MessagingCorp.Utils.Converters
+﻿using MessagingCorp.Utils.Enumeration;
+
+namespace MessagingCorp.Utils.Converters
 {
     public static class ActionToEnumConverter
     {
-        public static Action ConvertToAction(string action)
+        public static CorpUserAction ConvertToAction(string action)
         {
             if (action == null)
                 throw new ArgumentNullException("action");
 
             switch (action)
             {
-                case "login": return Action.LoginUser;
-                case "register": return Action.RegisterUser;
-                case "createlobby": return Action.CreateLobby;
-                case "joinlobby": return Action.JoinLobby;
-                case "deletelobby": return Action.DeleteLobby;
-                case "changesym": return Action.ChangeSymmetric;
-                case "changeasym": return Action.ChangeAsymmetric;
-                case "updsym": return Action.UpdateSymmetric;
-                case "updasym": return Action.UpdateAsymmetric;
-                case "sendmsg": return Action.SendMessage;
-                case "updmsg": return Action.UpdateMessage;
-                case "purge": return Action.PurgeUser;
-                default: return Action.Invalid;
+                case "login": return CorpUserAction.LoginUser;
+                case "register": return CorpUserAction.RegisterUser;
+                case "createlobby": return CorpUserAction.CreateLobby;
+                case "joinlobby": return CorpUserAction.JoinLobby;
+                case "deletelobby": return CorpUserAction.DeleteLobby;
+                case "changesym": return CorpUserAction.ChangeSymmetric;
+                case "changeasym": return CorpUserAction.ChangeAsymmetric;
+                case "updsym": return CorpUserAction.UpdateSymmetric;
+                case "updasym": return CorpUserAction.UpdateAsymmetric;
+                case "sendmsg": return CorpUserAction.SendMessage;
+                case "updmsg": return CorpUserAction.UpdateMessage;
+                case "purge": return CorpUserAction.PurgeUser;
+                default: return CorpUserAction.Invalid;
             }
         }
     }

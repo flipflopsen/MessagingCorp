@@ -1,17 +1,14 @@
-﻿using Serilog.Events;
-using Serilog;
-using MessagingCorp.Utils.Logger;
-using Ninject;
-using MessagingCorp.Configuration;
+﻿using MessagingCorp.Configuration;
 using MessagingCorp.Configuration.BO;
 using MessagingCorp.Modules;
-using MessagingCorp.Providers.API;
+using MessagingCorp.Utils.Enumeration;
+using MessagingCorp.Utils.Logger;
+using Ninject;
+using Serilog;
+using Serilog.Events;
 using System.Collections.Concurrent;
-using Autofac;
-using MessagingCorp.EntityManagement;
-using MessagingCorp.EntityManagement.API;
 
-namespace MessagingCorp.Services
+namespace MessagingCorp.Services.Core
 {
     public class MessageCorpService
     {

@@ -1,5 +1,5 @@
-﻿using MessagingCorp.Caching;
-using MessagingCorp.Providers.API;
+﻿using MessagingCorp.Providers.API;
+using MessagingCorp.Services.Caching;
 using Ninject.Modules;
 using System;
 using System.Collections.Generic;

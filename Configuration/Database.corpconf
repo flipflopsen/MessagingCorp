@@ -3,8 +3,8 @@ ConfOpMode::Full
 
 $-Server => "http://127.0.0.1";
 $-Port => "35167";
-$-DatabaseName => "Corp";
-$-NameSpace => "UserSpace";
+$-DatabaseName => "users";
+$-NameSpace => "MessagingCorpGeneral";
 $-Username => "corpadmin";
 $-Password => "lulz123";
 $-RpcTls => false;

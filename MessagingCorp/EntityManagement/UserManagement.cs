@@ -1,12 +1,12 @@
 ﻿using MessagingCorp.BO;
 using MessagingCorp.EntityManagement.API;
-using MessagingCorp.Services;
 using MessagingCorp.Services.API;
 using Ninject;
 using Serilog.Events;
 using Serilog;
 using System.Net;
 using MessagingCorp.Utils.Logger;
+using MessagingCorp.Services.Core;
 
 namespace MessagingCorp.EntityManagement
 {

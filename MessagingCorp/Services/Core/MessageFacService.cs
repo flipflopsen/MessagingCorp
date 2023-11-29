@@ -1,19 +1,14 @@
 ﻿using MessagingCorp.EntityManagement.API;
 using MessagingCorp.Services.API;
+using MessagingCorp.Utils.Logger;
 using Serilog.Events;
 using Serilog;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MessagingCorp.Utils.Logger;
 
-namespace MessagingCorp.Services
+namespace MessagingCorp.Services.Core
 {
     public class MessageFacService : IMessageFacService
     {
-        public required IUserManagement UserManagment {protected get; init; }
+        public required IUserManagement UserManagment { protected get; init; }
 
         private static readonly ILogger Logger = Log.Logger.ForContextWithConfig<MessageFacService>("./Logs/MessageFacService.log", true, LogEventLevel.Debug);
 

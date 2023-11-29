@@ -1,9 +1,4 @@
-﻿using MessagingCorp.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MessagingCorp.Services.Core;
 
 namespace MessagingCorp.ApplicationStartup
 {
@@ -15,7 +10,7 @@ namespace MessagingCorp.ApplicationStartup
             await service.InitializeService();
             await service.StartOperation();
 
-            var exit = Console.ReadKey();
+            _ = Console.ReadKey();
         }
     }
 }

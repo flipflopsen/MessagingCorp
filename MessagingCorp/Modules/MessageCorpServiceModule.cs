@@ -1,6 +1,5 @@
 ﻿using MessagingCorp.Configuration;
 using MessagingCorp.Configuration.BO;
-using MessagingCorp.Controller;
 using MessagingCorp.Providers.API;
 using MessagingCorp.Providers;
 using MessagingCorp.Services.API;
@@ -10,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MessagingCorp.Services.Core;
 
 namespace MessagingCorp.Modules
 {

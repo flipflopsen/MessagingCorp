@@ -41,14 +41,21 @@ namespace MessagingCorp.Database
         public async Task AddUser(string uid, string username, string pass)
         {
             await _client.Connect();
+            if (await IsUidExistent(uid))
+            {
+                Logger.Error("Tried to create a user with already existing uid!");
+                //TODO: Custom exception handling
+                return;
+            }
             await _client.Create<UserRecordDao>("user:" + uid, new UserRecordDao(uid, username, pass, new List<string>() { "123" }));
             Logger.Information("Created user with uid: " + uid);
         }
 
         public async Task<bool> AuthenticateUser(string uid, string password)
         {
-            return true;
-            throw new NotImplementedException();
+            await _client.Connect();
+            var usr = await GetUser(uid);
+            return usr.Password == password;
         }
 
         public async Task<User> GetUser(string uid)

@@ -62,6 +62,25 @@ This project focuses on implementing a Messenger Service with fully user-control
 
 
 ## How-To's
+### SurrealDB
+#### Good Information
+- [Concept](https://surrealdb.com/docs/introduction/concepts)
+- [Security Concepts](https://surrealdb.com/docs/security)
+- [SurrealQL Language](https://surrealdb.com/docs/surrealql) (!)
+- [Futures](https://surrealdb.com/docs/surrealql/datamodel/futures) could be interesting
+#### Run SurrealDB
+- **Command Line Args**
+	- `--ns` for preconfigured namespace
+	- `--db` for preconfigured db
+- **The 'normal' way with start:**
+   ```bash
+   surreal start -b 127.0.0.1:35167 -u corpadmin -p lulz123 --auth -l debug memory
+   ```
+- **Import surreal ql*
+   ```bash
+   surreal import --conn http://localhost:35167 --user corpadmin --pass lulz123 --ns MessagingCorpGeneral --db users Database/SurrealDbInit.surql
+   ```
+
 ### DI with Ninject
 For in-depth information, check out their [Wiki](https://github.com/ninject/Ninject/wiki).
 
@@ -151,3 +170,8 @@ public class KeyProvider : IKeyProvider
 - [Dapper](https://github.com/DapperLib/Dapper) In case of other DB than Surreal
 - [FluentValidation](https://github.com/FluentValidation/FluentValidation) In case of need of validators
 - [Lamar](https://github.com/jasperfx/lamar) for fast IoC (like StructureMap), in case of ninject being too lame or idk.
+
+## User model
+1. General Password
+2. Custom Key for Symm enc, IV and salt same with random gen
+3. Pub/Priv Keypair for asymm enc

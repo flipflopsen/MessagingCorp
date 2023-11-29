@@ -1,16 +1,16 @@
-﻿using MessagingCorp.Configuration;
-using MessagingCorp.Providers.API;
-using MessagingCorp.Utils.Logger;
-using MessagingCorp.BO.BusMessages;
-using MessagingCorp.Services.API;
-using MessagingCorp.EntityManagement.API;
+﻿using MessagingCorp.BO.BusMessages;
+using MessagingCorp.Configuration;
 using MessagingCorp.Crypto.Symmetric;
+using MessagingCorp.EntityManagement.API;
+using MessagingCorp.Providers.API;
+using MessagingCorp.Services.API;
+using MessagingCorp.Utils.Logger;
 using Ninject;
-using Serilog.Events;
 using Serilog;
+using Serilog.Events;
 using System.Text;
 
-namespace MessagingCorp.Services
+namespace MessagingCorp.Services.Core
 {
     public class MessageCorpDriver
     {
@@ -60,7 +60,7 @@ namespace MessagingCorp.Services
         {
             await Task.Run(() =>
             {
-                if (message.Action == Utils.Action.Invalid)
+                if (message.Action == Utils.Enumeration.CorpUserAction.Invalid)
                 {
                     Logger.Error("[MessageCorpDriver] > Action field from CorpMessage was invalid in handler!");
                     throw new NullReferenceException("Action field from CorpMessage was null in handler!");
@@ -68,7 +68,7 @@ namespace MessagingCorp.Services
 
                 switch (message.Action)
                 {
-                    case Utils.Action.RegisterUser:
+                    case Utils.Enumeration.CorpUserAction.RegisterUser:
                         {
                             var usernamePasswordSplit = message.AdditionalData.Split(";");
                             Logger.Information("Got registerUsermessage for user: " + message);
@@ -77,10 +77,10 @@ namespace MessagingCorp.Services
 
                             var usr = userManagement!.GetUser(message.OriginatorUserId!);
 
-                            busPovider!.GetMessageBus().Publish(new InternalHttpResponse() { IsSuccess = true, Userid = message.OriginatorUserId! } );
+                            busPovider!.GetMessageBus().Publish(new InternalHttpResponse() { IsSuccess = true, Userid = message.OriginatorUserId! });
                             break;
                         }
-                    case Utils.Action.LoginUser:
+                    case Utils.Enumeration.CorpUserAction.LoginUser:
                         {
                             Logger.Information("Got registerUsermessage for user: " + message.OriginatorUserId);
                             if (authenticator!.AuthenticateUser(message.OriginatorUserId, message.Password))
@@ -89,7 +89,7 @@ namespace MessagingCorp.Services
                             }
                             break;
                         }
-                    case Utils.Action.SendMessage:
+                    case Utils.Enumeration.CorpUserAction.SendMessage:
                         {
                             byte[] testKey = Encoding.UTF8.GetBytes("01234567890123456789012345678901");
                             byte[] testIV = Encoding.UTF8.GetBytes("0123456789012345");

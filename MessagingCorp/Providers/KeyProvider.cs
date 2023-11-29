@@ -11,7 +11,7 @@ namespace MessagingCorp.Providers
 {
     public class KeyProvider : IKeyProvider
     {
-        private IDatabaseAccess db;
+        private readonly IDatabaseAccess db;
 
         public KeyProvider(
             IDatabaseAccess dbAccess

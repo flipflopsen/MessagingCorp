@@ -1,6 +1,6 @@
-﻿namespace MessagingCorp.Utils
+﻿namespace MessagingCorp.Utils.Enumeration
 {
-    public enum Action
+    public enum CorpUserAction
     {
         Invalid,
 

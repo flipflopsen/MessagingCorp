@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MessagingCorp.Common.Generators.Exceptions
+﻿namespace MessagingCorp.Common.Generators.Exceptions
 {
     public class UidCreationException : Exception
     {

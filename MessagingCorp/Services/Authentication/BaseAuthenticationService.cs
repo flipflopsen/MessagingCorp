@@ -1,20 +1,14 @@
 ﻿using MessagingCorp.Providers.API;
 using MessagingCorp.Services.API;
-using Ninject;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MessagingCorp.Utils;
-using Serilog.Events;
-using Serilog;
+using MessagingCorp.Services.Core;
 using MessagingCorp.Utils.Logger;
-using MessagingCorp.Services;
+using Ninject;
+using Serilog;
+using Serilog.Events;
 
-namespace MessagingCorp.Auth
+namespace MessagingCorp.Services.Authentication
 {
-    public class BaseAuthenticator : IAuthenticationGovernment
+    public class BaseAuthenticationService : IAuthenticationGovernment
     {
         private static readonly ILogger Logger = Log.Logger.ForContextWithConfig<MessageCorpDriver>("./Logs/MessageCorpDriver.log", true, LogEventLevel.Debug);
 
@@ -22,7 +16,7 @@ namespace MessagingCorp.Auth
         private ICachingProvider cachingProvider;
         //private ICryptoProvider cryptoProvider;
 
-        public BaseAuthenticator(IKernel kernel)
+        public BaseAuthenticationService(IKernel kernel)
         {
             databaseAccess = kernel.Get<IDatabaseAccess>();
             cachingProvider = kernel.Get<ICachingProvider>();
@@ -40,6 +34,7 @@ namespace MessagingCorp.Auth
         {
             if (!cachingProvider.IsUserInCache(uid, uniquePassword))
             {
+                // todo: crypto management hash password 
                 if (databaseAccess.AuthenticateUser(uid, uniquePassword).Result)
                 {
                     Logger.Information($"Got user {uid} authenticated from db!");

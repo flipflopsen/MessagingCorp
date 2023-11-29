@@ -88,7 +88,7 @@ namespace MessagingCorp.Common.HttpStuff
 
                 // Await and send the response when the handler completes
                 var httpResponse = await responseTask;
-                SendHttpResponseAsync(httpResponse!);
+                //SendHttpResponseAsync(httpResponse!);
             }
             else
             {

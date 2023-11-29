@@ -1,6 +1,6 @@
-﻿using MessagingCorp.Auth;
-using MessagingCorp.Providers.API;
+﻿using MessagingCorp.Providers.API;
 using MessagingCorp.Services.API;
+using MessagingCorp.Services.Authentication;
 using Ninject.Modules;
 using System;
 using System.Collections.Generic;
@@ -15,7 +15,7 @@ namespace MessagingCorp.Modules
         // needs database and maybe encryption
         public override void Load()
         {
-            Bind<IAuthenticationGovernment>().To<BaseAuthenticator>();
+            Bind<IAuthenticationGovernment>().To<BaseAuthenticationService>();
         }
     }
 }
