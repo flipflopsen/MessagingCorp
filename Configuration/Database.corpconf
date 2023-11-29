@@ -1,10 +1,11 @@
 Conf:=:Database
 ConfOpMode::Full
 
-$-Server => "http://127.0.0.1";
-$-Port => "35167";
-$-DatabaseName => "users";
-$-NameSpace => "MessagingCorpGeneral";
+$-Server => "http://85.214.89.199";
+$-Port => "8082";
+$-UserDatabaseName => "UserDb";
+$-VaultDatabaseName => "VaultDb";
+$-NameSpace => "MessagingCorp";
 $-Username => "corpadmin";
 $-Password => "lulz123";
 $-RpcTls => false;

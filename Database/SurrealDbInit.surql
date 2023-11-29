@@ -11,12 +11,13 @@ DEFINE DATABASE keys;
 
 -- Create Users for access
 USE NS MessagingCorpGeneral;
-DEFINE USER corpadmin ON NAMESPACE PASSWORD 'lulz123' ROLES OWNER;
+DEFINE USER corpadmin ON ROOT PASSWORD 'lulz123' ROLES OWNER;
 
+USE NS MessagingCorpGeneral DB users;
+
+BEGIN TRANSACTION;
+USE NS MessagingCorpGeneral DB users;
 -- Create the admin user with specific numeric id
-CREATE users:admin CONTENT {
-	UserId: 0, 
-	UserName: 'Administrator',
-	Password: 'Lol123', 
-	ActiveLobbyParticipations: ['0'],
-};
+CREATE ONLY users:admin SET UserId = 0, UserName = 'Administrator',Password = 'Lol123';
+
+COMMIT TRANSACTION;

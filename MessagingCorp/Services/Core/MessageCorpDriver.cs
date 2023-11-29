@@ -21,6 +21,8 @@ namespace MessagingCorp.Services.Core
         private readonly IMessageCorpConfiguration? messageCorpConfiguration;
         private readonly IMessageBusProvider? busPovider;
         private readonly IUserManagement? userManagement;
+        private readonly ICryptoProvider? cryptoProvider;
+        private readonly IDatabaseAccess? databaseAccess;
 
 
         [Inject]
@@ -29,7 +31,9 @@ namespace MessagingCorp.Services.Core
             IMessageCorpConfiguration messageCorpConfiguration,
             IMessageBusProvider busPovider,
             IUserManagement userManagement,
-            IMessageCorpController controller
+            IMessageCorpController controller,
+            ICryptoProvider cryptoProvider,
+            IDatabaseAccess databaseAccess
             )
         {
             this.authenticator = authenticator;
@@ -37,6 +41,7 @@ namespace MessagingCorp.Services.Core
             this.busPovider = busPovider;
             this.userManagement = userManagement;
             this.controller = controller;
+            this.databaseAccess = databaseAccess;
         }
 
         #region Initialization
@@ -47,8 +52,8 @@ namespace MessagingCorp.Services.Core
 
         public async Task RunDriver()
         {
+            await databaseAccess!.SetupSurrealTables();
             busPovider!.GetMessageBus().Subscribe<CorpMessage>(async (message, tok) => await HandleCorpMessage(message));
-
             await controller.RunCorpHttp();
         }
 

@@ -7,11 +7,15 @@ using Microsoft.Extensions.DependencyInjection;
 using Ninject;
 using Serilog.Events;
 using Serilog;
-using SurrealDb;
-using SurrealDb.Net;
+using SurrealDB.Configuration;
+using SurrealDB.Driver.Rpc;
+using SurrealDB.Models;
 using MessagingCorp.Utils.Logger;
 using MessagingCorp.Database.DAO;
 using MessagingCorp.Utils.Converters;
+using SurrealDB.Models.Result;
+using SurrealDB.Driver.Rest;
+using SurrealDb.Net;
 
 namespace MessagingCorp.Database
 {
@@ -19,41 +23,70 @@ namespace MessagingCorp.Database
     {
         private static readonly ILogger Logger = Log.Logger.ForContextWithConfig<SurrealDatabaseAccess>("./Logs/MessageCorpDatabase.log", true, LogEventLevel.Debug);
 
-        private SurrealDbClient _client;
+        private readonly SurrealDbClient _client;
+        private readonly DatabaseConfiguration _dbConfig;
+
+        private const string USER_TABLE = "Userinos";
+        private const string SYM_VAULT = "VaultSym";
+        private const string ASYM_VAULT = "VaultAsym";
 
         [Inject]
         public SurrealDatabaseAccess(IMessageCorpConfiguration config)
         {
-            var dbconf = (DatabaseConfiguration)config.GetConfiguration(MessageCorpConfigType.Database);
+            _dbConfig = (DatabaseConfiguration)config.GetConfiguration(MessageCorpConfigType.Database);
 
-            var endpoint = dbconf.Server + ":" + dbconf.Port;
+            var endpoint = _dbConfig.Server + ":" + _dbConfig.Port;
+            
             var options = SurrealDbOptions.Create()
             .WithEndpoint(endpoint)
-            .WithDatabase(dbconf.DatabaseName)
-            .WithNamespace(dbconf.NameSpace)
-            .WithUsername(dbconf.Username)
-            .WithPassword(dbconf.Password)
+            .WithDatabase(_dbConfig.UserDatabaseName)
+            .WithUsername(_dbConfig.Username)
+            .WithPassword(_dbConfig.Password)
             .Build();
 
-            _client = new SurrealDbClient(options);
+            _client = new(options);
         }
+        
 
         public async Task AddUser(string uid, string username, string pass)
         {
-            await _client.Connect();
-            if (await IsUidExistent(uid))
+            try
             {
-                Logger.Error("Tried to create a user with already existing uid!");
-                //TODO: Custom exception handling
-                return;
+                await _client.Connect();
+                await _client.Use(_dbConfig.NameSpace, _dbConfig.UserDatabaseName);
+
+                if (await IsUidExistent(uid))
+                {
+                    Logger.Error("Tried to create a user with already existing uid!");
+                    //TODO: Custom exception handling
+                    return;
+                }
+                
+                var dao = new UserRecordDao(uid, username, pass, new List<string>() { "0" });
+
+                var created = await _client.Create($"{USER_TABLE}", dao);
+
+                var select = await _client.Select<UserRecordDao>($"{USER_TABLE}:{uid}");
+                if (select.Any())
+                {
+                    var usr = select.First();
+
+                    // TODO: replace with automapper
+                    var converter = new StaticDaoToBoConverter<UserRecordDao, User>();
+                    var ret = converter.Convert(usr);
+
+                }
+                Logger.Information("Created user with uid: " + uid);
+            
             }
-            await _client.Create<UserRecordDao>("user:" + uid, new UserRecordDao(uid, username, pass, new List<string>() { "123" }));
-            Logger.Information("Created user with uid: " + uid);
+            catch (Exception e)
+            {
+                Logger.Error("Exception thrown: " + e.Message);
+            }
         }
 
         public async Task<bool> AuthenticateUser(string uid, string password)
         {
-            await _client.Connect();
             var usr = await GetUser(uid);
             return usr.Password == password;
         }
@@ -61,25 +94,25 @@ namespace MessagingCorp.Database
         public async Task<User> GetUser(string uid)
         {
             await _client.Connect();
-            var sel = await _client.Select<UserRecordDao>($"user:{uid}");
-            var first = (sel.FirstOrDefault(f => f.UserId!.Equals(uid)));
-            if (first != null)
+            await _client.Use(_dbConfig.NameSpace, _dbConfig.UserDatabaseName);
+
+            var select = await _client.Select<UserRecordDao>($"{USER_TABLE}:{uid}");
+            if (select.Any())
             {
-                Logger.Information("Got user with uid: " + first.UserId);
+                var result = select.First();
                 var conv = new StaticDaoToBoConverter<UserRecordDao, User>();
 
-                var usr = conv.Convert(first);
+                var usr = conv.Convert(result);
 
                 return usr;
             }
-
             Logger.Warning("Failed to get user with uid: " + uid);
             return null!;
         }
 
         public async Task<bool> IsUidExistent(string uid)
         {
-            throw new NotImplementedException();
+            return await GetUser(uid) != null;
         }
 
         public async Task RemoveUser(string uid)

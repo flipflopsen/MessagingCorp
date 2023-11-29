@@ -9,7 +9,7 @@ namespace MessagingCorp.Modules
     {
         public override void Load()
         {
-            this.Bind<IDatabaseAccess>().To<SurrealDatabaseAccess>();
+            this.Bind<IDatabaseAccess>().To<SurrealDatabaseAccess>().InSingletonScope();
             //this.Bind<IDatabaseAccess>().To<DatabaseAccessMock>();
         }
     }

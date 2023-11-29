@@ -10,7 +10,8 @@ namespace MessagingCorp.Configuration.BO
     {
         public string Server { get; set; }
         public string Port { get; set; }
-        public string DatabaseName { get; set; }
+        public string UserDatabaseName { get; set; }
+        public string VaultDatabaseName { get; set; }
         public string NameSpace { get; set; }
         public string Username { get; set; }
         public string Password { get; set; }

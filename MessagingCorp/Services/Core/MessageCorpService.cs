@@ -27,7 +27,6 @@ namespace MessagingCorp.Services.Core
             InitializeDiKernels(KernelLevel.Driver);
 
             var dbConfig = (DatabaseConfiguration)messageCorpConfiguration!.GetConfiguration(MessageCorpConfigType.Database);
-            Logger.Information($"DbConfig, DatabaseName: {dbConfig.DatabaseName}");
 
             await InitializeServices();
         }
@@ -76,10 +75,6 @@ namespace MessagingCorp.Services.Core
 
             // Driver init
             driver = kernels[KernelLevel.Driver].Get<MessageCorpDriver>();
-            driver.InitializeDriver();
-            await driver.RunDriver();
-
-
             _isInitialized = true;
         }
 
@@ -94,9 +89,8 @@ namespace MessagingCorp.Services.Core
             if (!_isInitialized)
                 throw new InvalidOperationException("Service wasnt properly initialized!");
 
-            driver!.InitializeDriver();
 
-            await driver.RunDriver();
+            await driver!.RunDriver();
         }
 
         #endregion

@@ -12,6 +12,7 @@ using Serilog;
 using Serilog.Events;
 using System.Net;
 using System.Text;
+using System.Runtime;
 
 namespace MessagingCorp.Services.Core
 {
@@ -117,6 +118,7 @@ namespace MessagingCorp.Services.Core
 
             // wait async for the sem, released by the observable
             await chillSem.WaitAsync();
+            chillSem = new SemaphoreSlim(0);
             return response;
         }
 
