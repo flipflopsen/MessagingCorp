@@ -11,6 +11,7 @@ using Ninject;
 using Serilog;
 using Serilog.Events;
 using System.Net;
+using System.Text;
 
 namespace MessagingCorp.Controller
 {
@@ -18,28 +19,26 @@ namespace MessagingCorp.Controller
     {
         private static readonly ILogger Logger = Log.Logger.ForContextWithConfig<MessageCorpController>("./Logs/MessageCorpDriver.log", true, LogEventLevel.Debug);
 
-        private readonly IKernel _kernel;
         private readonly IMessageBusProvider bus;
 
-        private CorpHttpServer corpHttpServer;
-        private CorpPostRequestParser postParser;
+        private readonly CorpHttpServer corpHttpServer;
+        private readonly CorpPostRequestParser postParser;
 
-        private string challenge = "Challenge";
-        private string securityConstant = "SomeMessageCorpConstant";
+        private readonly string challenge;
+        private readonly string securityConstant;
 
         public MessageCorpController(IKernel kernel) 
         {
-            _kernel = kernel;
             bus = kernel.Get<IMessageBusProvider>();
 
-            var encConfig = (EncryptionConfiguration)_kernel.Get<IMessageCorpConfiguration>().GetConfiguration(MessageCorpConfigType.Encryption);
+            var encConfig = (EncryptionConfiguration)kernel.Get<IMessageCorpConfiguration>().GetConfiguration(MessageCorpConfigType.Encryption);
             challenge = encConfig.RequestSecurityChallenge;
             securityConstant = encConfig.RequestSecurityConstant;
 
             corpHttpServer = new CorpHttpServer();
             postParser = new CorpPostRequestParser(challenge, securityConstant);
 
-            var httpConfig = (CorpHttpConfiguration)_kernel.Get<IMessageCorpConfiguration>().GetConfiguration(MessageCorpConfigType.CorpHttp);
+            var httpConfig = (CorpHttpConfiguration)kernel.Get<IMessageCorpConfiguration>().GetConfiguration(MessageCorpConfigType.CorpHttp);
             corpHttpServer.RegisterEndpoint($"http://{httpConfig.CorpHttpIp}:{httpConfig.CorpHttpPort}/", GenericHandler);
             corpHttpServer.RegisterEndpoint($"http://{httpConfig.CorpHttpIp}:{httpConfig.CorpHttpPort}/genGetter/", GenericGetHandler);
             corpHttpServer.RegisterEndpoint($"http://{httpConfig.CorpHttpIp}:{httpConfig.CorpHttpPort}/genPoster/", GenericPostHandler);
@@ -71,6 +70,8 @@ namespace MessagingCorp.Controller
             var request = context.Request;
             var response = context.Response;
 
+            var chillSem = new SemaphoreSlim(0);
+
             if (!request.HasEntityBody)
             {
                 return null!;
@@ -91,13 +92,31 @@ namespace MessagingCorp.Controller
                         Action = ActionToEnumConverter.ConvertToAction(reqForm!.Action)
                     };
 
-                    await bus!.GetMessageBus().Publish(msg);
+                    // Because the action handling happens in the Driver, we Observe for an InternalHttpResponse here, which represents the result of the operation.
+                    bus!.GetMessageBus().Observe<InternalHttpResponse>().Subscribe(
+                        onNext: value =>
+                        {
+                            if (value.IsSuccess)
+                            {
+                                response.StatusCode = 200;
+                                response.StatusDescription = "OK";
+                                response.OutputStream.Write(Encoding.UTF8.GetBytes(value.Userid), 0, Encoding.UTF8.GetBytes(value.Userid).Length);
+                            }
+                            else
+                                response.StatusCode = 404;
 
+                            chillSem.Release();
+                        },
+                        onError: error => chillSem.Release(),
+                        onCompleted: () => chillSem.Release());
+
+                    // then we publish 
+                    await bus!.GetMessageBus().Publish(msg);
                 }
             }
-            response.StatusCode = 200;
-            response.StatusDescription = "OK";
 
+            // wait async for the sem, released by the observable
+            await chillSem.WaitAsync();
             return response;
         }
 

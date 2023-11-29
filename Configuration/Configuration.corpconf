@@ -1,0 +1,11 @@
+Conf:=:Configuration
+ConfOpMode::Full
+
+$-CorpHttpIp => "0.0.0.0";
+$-CorpHttpPort => "80";
+$-DatabaseName => "MyDatabase";
+$-NameSpace => "MyDatabase";
+$-Username => "MyUser";
+$-Password => "MyPassword";
+$-RpcTls => false;
+$-LogFilePath => "./Logs/dblog.log";

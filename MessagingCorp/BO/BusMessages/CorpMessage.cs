@@ -1,4 +1,5 @@
 ﻿using MessagingCorp.Utils;
+using System.Net;
 
 namespace MessagingCorp.BO.BusMessages
 {
@@ -18,5 +19,7 @@ namespace MessagingCorp.BO.BusMessages
         public string Message { get; set; } = string.Empty;
 
         public string AdditionalData { get; set; } = string.Empty;
+
+        public HttpListenerContext HttpContext { get; set; }
     }
 }

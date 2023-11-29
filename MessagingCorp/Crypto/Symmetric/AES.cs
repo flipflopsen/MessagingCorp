@@ -30,8 +30,8 @@ namespace MessagingCorp.Crypto.Symmetric
 
             var cipher = GetCipher(true, key, iv);
            
-                var cipherText = new byte[cipher.GetOutputSize(message.Length)];
-                var len = cipher.ProcessBytes(messageBytes, 0, message.Length, cipherText, 0);
+                var cipherText = new byte[cipher.GetOutputSize(messageBytes.Length)];
+                var len = cipher.ProcessBytes(messageBytes, 0, messageBytes.Length, cipherText, 0);
                 len += cipher.DoFinal(cipherText, len);
 
                 // If len is less than the length of the output buffer, create a new array with the correct length
@@ -49,8 +49,8 @@ namespace MessagingCorp.Crypto.Symmetric
         {
             var encryptedMessageBytes = Convert.FromBase64String(encryptedMessage);
             var cipher = GetCipher(false, key, iv);
-            var decryptedText = new byte[cipher.GetOutputSize(encryptedMessage.Length)];
-            var len = cipher.ProcessBytes(encryptedMessageBytes, 0, encryptedMessage.Length, decryptedText, 0);
+            var decryptedText = new byte[cipher.GetOutputSize(encryptedMessageBytes.Length)];
+            var len = cipher.ProcessBytes(encryptedMessageBytes, 0, encryptedMessageBytes.Length, decryptedText, 0);
             len += cipher.DoFinal(decryptedText, len);
 
             // If len is less than the length of the output buffer, create a new array with the correct length

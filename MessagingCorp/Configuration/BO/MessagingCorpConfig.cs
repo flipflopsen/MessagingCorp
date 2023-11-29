@@ -12,7 +12,7 @@ namespace MessagingCorp.Configuration.BO
     public class MessagingCorpConfig : IMessageCorpConfiguration
     {
         private readonly ConfigurationParser _configParser;
-        private const string CONFIG_FOLDER_BASE_NAME = "Configuration";
+        private const string CONFIG_FOLDER_BASE_NAME = "..\\..\\..\\..\\Configuration";
         private const string DB_CONF = "Database";
         private const string ENC_CONF = "Encryption";
         private const string LB_CONF = "LoadBalance";

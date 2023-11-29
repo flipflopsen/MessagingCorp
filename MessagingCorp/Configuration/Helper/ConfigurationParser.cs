@@ -15,6 +15,7 @@ namespace MessagingCorp.Configuration.Helper
         public BaseConfiguration Parse(string filePath)
         {
             Logger.Information($"Starting to read Log-File: {filePath}");
+
             var lines = File.ReadLines(filePath);
 
             var isFullOpMode = false;

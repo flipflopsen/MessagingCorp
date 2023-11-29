@@ -1,0 +1,6 @@
+Conf:=:CorpHttp
+ConfOpMode::Full
+
+$-CorpHttpIp => "127.0.0.1";
+$-CorpHttpPort => "8000";
+$-LogFilePath => "./Logs/dblog.log";

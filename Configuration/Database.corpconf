@@ -1,0 +1,11 @@
+Conf:=:Database
+ConfOpMode::Full
+
+$-Server => "localhost";
+$-Port => "1433";
+$-DatabaseName => "MyDatabase";
+$-NameSpace => "MyDatabase";
+$-Username => "MyUser";
+$-Password => "MyPassword";
+$-RpcTls => false;
+$-LogFilePath => "./Logs/dblog.log";

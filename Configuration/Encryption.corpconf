@@ -1,0 +1,5 @@
+Conf:=:Encryption
+ConfOpMode::Full
+
+$-RequestSecurityConstant => "SomeMessageCorpConstant";
+$-RequestSecurityChallenge => "Challenge";
