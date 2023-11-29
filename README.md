@@ -76,7 +76,7 @@ This project focuses on implementing a Messenger Service with fully user-control
    ```bash
    surreal start -b 127.0.0.1:35167 -u corpadmin -p lulz123 --auth -l debug memory
    ```
-- **Import surreal ql*
+- **Import SurrealQL**
    ```bash
    surreal import --conn http://localhost:35167 --user corpadmin --pass lulz123 --ns MessagingCorpGeneral --db users Database/SurrealDbInit.surql
    ```
