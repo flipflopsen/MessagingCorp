@@ -40,7 +40,7 @@ namespace MessagingCorp.Auth
         {
             if (!cachingProvider.IsUserInCache(uid, uniquePassword))
             {
-                if (databaseAccess.AuthenticateUser(uid, uniquePassword))
+                if (databaseAccess.AuthenticateUser(uid, uniquePassword).Result)
                 {
                     Logger.Information($"Got user {uid} authenticated from db!");
                     if (!cachingProvider.IsUserInCache(uid, uniquePassword))

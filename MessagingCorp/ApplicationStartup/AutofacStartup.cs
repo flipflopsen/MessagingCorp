@@ -7,7 +7,6 @@ using MessagingCorp.Modules;
 using MessagingCorp.Services;
 using MessagingCorp.Services.API;
 using Ninject;
-using Spring.Validation;
 using System;
 using System.Collections.Generic;
 using System.Linq;

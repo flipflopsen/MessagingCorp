@@ -134,3 +134,20 @@ public class KeyProvider : IKeyProvider
     // Other properties and methods...
 }
 ```
+
+## Packages
+### In Use
+- **Ninject** for DI
+- **Bouncycastle** for Crypto
+- **Serilog** for Logging
+- **SurrealDB.NET** for Database Access to SurrealDB
+- **NUnit** for Testing
+- **FluentValidation** for building nice Validators
+
+### Interesting
+- [AutoMapper](https://automapper.org/) for object convertion
+- [CacheManager](https://github.com/MichaCo/CacheManager) for advanced caching scenarios
+- [Ocelot](https://github.com/ThreeMammals/Ocelot) If we want to change the Architecture to Microservice, then this could be wild
+- [Dapper](https://github.com/DapperLib/Dapper) In case of other DB than Surreal
+- [FluentValidation](https://github.com/FluentValidation/FluentValidation) In case of need of validators
+- [Lamar](https://github.com/jasperfx/lamar) for fast IoC (like StructureMap), in case of ninject being too lame or idk.
