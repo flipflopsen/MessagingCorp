@@ -1,7 +1,9 @@
 ﻿using Castle.Core.Internal;
+using SurrealDb.Net.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -11,27 +13,43 @@ namespace MessagingCorp.BO
     {
         // todo: profilbild
 
-        private string _userId;
-        public string DisplayedName { get; set; }
+        public string UserId { get; set; }
+        public string UserName { get; set; }
+        public string Password { get; set; }
 
-        private readonly List<string> _activeLobbyParticipations;
-        public string? Password;
+        public List<string> ActiveLobbyParticipations { get; set; }
 
-        public User(string uid, string wantedNickname, string? password, int? pin)
+        //private readonly List<string> _activeLobbyParticipations;
+
+        public User() { }
+
+        public User(string uid, string nickname, string password)
         {
-            _userId = uid;
-            DisplayedName = wantedNickname;
-            _activeLobbyParticipations = new List<string>();
+            UserId = uid;
+            UserName = nickname;
+            //_activeLobbyParticipations = new List<string>();
+            ActiveLobbyParticipations = new List<string>();
+            Password = password;
         }
 
-        public void SetUserId(string userId)
+        public User(string uid, string nickname, string password, List<string> activeLobbyParticipations)
         {
-            this._userId = userId;
+            UserId = uid;
+            UserName = nickname;
+            //_activeLobbyParticipations = new List<string>();
+            ActiveLobbyParticipations = activeLobbyParticipations;
+            Password = password;
+        }
+
+        public bool IsUserInLobby(string lobbyId) 
+        {
+            //return _activeLobbyParticipations.Contains(lobbyId);
+            return ActiveLobbyParticipations.Contains(lobbyId);
         }
 
         public bool ValidateUserIntegrity()
         {
-            return !(_userId.IsNullOrEmpty() && DisplayedName.IsNullOrEmpty() && Password.IsNullOrEmpty());
+            return !(UserId.IsNullOrEmpty() && UserName.IsNullOrEmpty() && Password.IsNullOrEmpty());
         }
     }
 }

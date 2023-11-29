@@ -1,4 +1,6 @@
-﻿using Ninject.Modules;
+﻿using MessagingCorp.Providers;
+using MessagingCorp.Providers.API;
+using Ninject.Modules;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +13,8 @@ namespace MessagingCorp.Modules
     {
         public override void Load()
         {
-
+            this.Bind<ICryptoProvider>().To<CryptoProvider>();
+            this.Bind<IKeyProvider>().To<KeyProvider>();
         }
     }
 }

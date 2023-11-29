@@ -26,12 +26,12 @@ namespace MessagingCorp.EntityManagement
         public void AddUser(string uid, string username, string password)
         {
             Logger.Information("Adding user: " + uid);
-            db.AddUser(uid, username, password);
+            db.AddUser(uid, username, password).GetAwaiter().GetResult();
         }
 
         public User GetUser(string uid)
         {
-            return db.GetUser(uid);
+            return db.GetUser(uid).Result;
         }
 
         public void RemoveUser(string uid)

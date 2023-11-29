@@ -15,12 +15,10 @@ namespace MessagingCorp.Services
 {
     public class MessageCorpService
     {
-        private static IContainer Container { get; set; }
+        private static readonly ILogger Logger = Log.Logger.ForContextWithConfig<MessageCorpService>("./Logs/MessageCorpService.log", true, LogEventLevel.Debug);
 
         private readonly ConcurrentDictionary<KernelLevel, IKernel> kernels = new ConcurrentDictionary<KernelLevel, IKernel>();
         private MessageCorpDriver? driver;
-
-        private static readonly ILogger Logger = Log.Logger.ForContextWithConfig<MessageCorpService>("./Logs/MessageCorpService.log", true, LogEventLevel.Debug);
 
         private IMessageCorpConfiguration? messageCorpConfiguration;
 

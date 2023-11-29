@@ -9,13 +9,13 @@ namespace MessagingCorp.Services.API
 {
     public interface IDatabaseAccess
     {
-        bool IsUidExistent(string uid);
-        bool AuthenticateUser(string uid, string password);
+        Task<bool> IsUidExistent(string uid);
+        Task<bool> AuthenticateUser(string uid, string password);
 
-        public void AddUser(string uid, string username, string pass);
+        Task AddUser(string uid, string username, string pass);
 
-        public void RemoveUser(string uid);
+        Task RemoveUser(string uid);
 
-        public User GetUser(string uid);
+        Task<User> GetUser(string uid);
     }
 }

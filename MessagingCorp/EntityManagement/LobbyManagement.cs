@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MessagingCorp.EntityManagement
 {
-    internal class LobbyManagement
+    public class LobbyManagement
     {
     }
 }

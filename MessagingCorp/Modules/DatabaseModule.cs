@@ -1,11 +1,7 @@
 ﻿using MessagingCorp.Database;
 using MessagingCorp.Services.API;
 using Ninject.Modules;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace MessagingCorp.Modules
 {
@@ -13,7 +9,8 @@ namespace MessagingCorp.Modules
     {
         public override void Load()
         {
-            this.Bind<IDatabaseAccess>().To<DatabaseAccessMock>();
+            this.Bind<IDatabaseAccess>().To<SurrealDatabaseAccess>();
+            //this.Bind<IDatabaseAccess>().To<DatabaseAccessMock>();
         }
     }
 }

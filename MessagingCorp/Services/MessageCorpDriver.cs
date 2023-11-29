@@ -75,6 +75,8 @@ namespace MessagingCorp.Services
                             userManagement!.AddUser(message.OriginatorUserId!, usernamePasswordSplit[0], usernamePasswordSplit[1]);
                             Logger.Information("going to register user..");
 
+                            var usr = userManagement!.GetUser(message.OriginatorUserId!);
+
                             busPovider!.GetMessageBus().Publish(new InternalHttpResponse() { IsSuccess = true, Userid = message.OriginatorUserId! } );
                             break;
                         }

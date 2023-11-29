@@ -1,11 +1,11 @@
 Conf:=:Database
 ConfOpMode::Full
 
-$-Server => "localhost";
-$-Port => "1433";
-$-DatabaseName => "MyDatabase";
-$-NameSpace => "MyDatabase";
-$-Username => "MyUser";
-$-Password => "MyPassword";
+$-Server => "http://127.0.0.1";
+$-Port => "35167";
+$-DatabaseName => "Corp";
+$-NameSpace => "UserSpace";
+$-Username => "corpadmin";
+$-Password => "lulz123";
 $-RpcTls => false;
 $-LogFilePath => "./Logs/dblog.log";

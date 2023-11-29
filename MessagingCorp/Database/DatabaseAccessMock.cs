@@ -14,29 +14,33 @@ namespace MessagingCorp.Database
 
         public DatabaseAccessMock() { }
 
-        public void AddUser(string uid, string username, string pass)
+        public Task AddUser(string uid, string username, string pass)
         {
-            users.Add(uid, new User(uid, username, pass, 0));
+            users.Add(uid, new User(uid, username, pass));
+            return Task.CompletedTask;
         }
 
-        public void RemoveUser(string uid) 
+        public Task RemoveUser(string uid) 
         {
             users.Remove(uid);
+            return Task.CompletedTask;
         }
-        public User GetUser(string uid)
+        public Task<User> GetUser(string uid)
         {
-            return users[uid];
+            return new Task<User>(() => users[uid]);
         }
-        public bool AuthenticateUser(string uid, string password)
+        public Task<bool> AuthenticateUser(string uid, string password)
         {
             if (!users.ContainsKey(uid))
-                return false;
-            return users[uid].Password! == password;
+                return new Task<bool>(() => false);
+            if (users[uid].Password! == password)
+                return new Task<bool>(() => true);
+            return new Task<bool>(() => false);
         }
 
-        public bool IsUidExistent(string uid)
+        public Task<bool> IsUidExistent(string uid)
         {
-            return users.ContainsKey(uid);
+            return new Task<bool>(() => true);
         }
     }
 }
