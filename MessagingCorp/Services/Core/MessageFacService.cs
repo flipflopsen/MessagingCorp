@@ -1,8 +1,8 @@
-﻿using MessagingCorp.EntityManagement.API;
+﻿using MessagingCorp.Common.Logger;
+using MessagingCorp.EntityManagement.API;
 using MessagingCorp.Services.API;
-using MessagingCorp.Utils.Logger;
-using Serilog.Events;
 using Serilog;
+using Serilog.Events;
 
 namespace MessagingCorp.Services.Core
 {

@@ -1,18 +1,17 @@
 ﻿using MessagingCorp.BO.BusMessages;
+using MessagingCorp.Common.Converters;
 using MessagingCorp.Common.HttpStuff;
 using MessagingCorp.Configuration;
 using MessagingCorp.Configuration.BO;
 using MessagingCorp.Providers.API;
 using MessagingCorp.Services.API;
-using MessagingCorp.Utils;
-using MessagingCorp.Utils.Converters;
-using MessagingCorp.Utils.Logger;
+using MessagingCorp.Common.Logger;
 using Ninject;
 using Serilog;
 using Serilog.Events;
 using System.Net;
 using System.Text;
-using System.Runtime;
+using MessagingCorp.Common.Generators;
 
 namespace MessagingCorp.Services.Core
 {

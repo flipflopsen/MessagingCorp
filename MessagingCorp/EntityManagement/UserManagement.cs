@@ -1,12 +1,12 @@
-﻿using MessagingCorp.BO;
-using MessagingCorp.EntityManagement.API;
-using Ninject;
-using Serilog.Events;
-using Serilog;
-using System.Net;
-using MessagingCorp.Utils.Logger;
-using MessagingCorp.Services.Core;
+﻿using MessagingCorp.Common.Enumeration;
+using MessagingCorp.Common.Logger;
 using MessagingCorp.Database.API;
+using MessagingCorp.EntityManagement.API;
+using MessagingCorp.EntityManagement.BO;
+using MessagingCorp.Services.Core;
+using Ninject;
+using Serilog;
+using Serilog.Events;
 using System.Collections.Concurrent;
 
 namespace MessagingCorp.EntityManagement
@@ -27,6 +27,8 @@ namespace MessagingCorp.EntityManagement
             PopulateSurrealIdDictFromExistingDb();
         }
 
+        #region Add/Get/Remove User
+
         public async Task AddUser(string uid, string username, string password)
         {
             Logger.Information("Adding user: " + uid);
@@ -43,15 +45,6 @@ namespace MessagingCorp.EntityManagement
                 return null!;
         }
 
-        public string GetSurrealIdFromUid(string uid)
-        {
-            var got = UidToSurrealIdUserDict.TryGetValue(uid, out var surrealId);
-            if (got)
-                return surrealId!;
-            else
-                return string.Empty!;
-        }
-
         public async Task<bool> RemoveUser(string uid)
         {
             var surrId = GetSurrealIdFromUid(uid);
@@ -62,6 +55,55 @@ namespace MessagingCorp.EntityManagement
                 Logger.Warning("[UserManagement] > Attempted to delete user with empty UID, sus!");
 
             return false;
+        }
+
+        #endregion
+
+        #region FriendList Logic
+        public async Task SendFriendRequest(string originatorUid, string targetUid)
+        {
+            var originator = await GetUser(originatorUid);
+            var target = await GetUser(targetUid);
+
+            if (originator != null && target != null)
+            {
+                target.AddFriendRequest(new FriendRequest(originatorUid, CorpActionDirection.Incoming));
+                originator.AddFriendRequest(new FriendRequest(targetUid, CorpActionDirection.Outgoing));
+
+                await db.UpdateUser(originator!);
+                await db.UpdateUser(target!);
+                Logger.Information($"[UserManagement] > {originator!.UserName} ({originatorUid}) sent a friend request to {target!.UserName} ({targetUid}).");
+            }
+
+        }
+
+        public async Task AcceptFriendRequest(string originatorUid, string targetUid)
+        {
+            var originator = await GetUser(originatorUid);
+            var target = await GetUser(targetUid);
+
+            if (target != null && originator != null)
+            {
+                target.AddFriend(originatorUid);
+                originator.AddFriend(targetUid);
+
+                await db.UpdateUser(originator!);
+                await db.UpdateUser(target!);
+                Logger.Information($"[UserManagement] > {originator!.UserName} ({originatorUid}) accepted the friend request of {target!.UserName} ({targetUid}), they are friends now!");
+            }
+        }
+
+
+        #endregion
+
+        #region SurrealDB Helpers
+        public string GetSurrealIdFromUid(string uid)
+        {
+            var got = UidToSurrealIdUserDict.TryGetValue(uid, out var surrealId);
+            if (got)
+                return surrealId!;
+            else
+                return string.Empty!;
         }
 
         private void PopulateSurrealIdDictFromExistingDb()
@@ -78,5 +120,6 @@ namespace MessagingCorp.EntityManagement
             }
                 
         }
+        #endregion
     }
 }

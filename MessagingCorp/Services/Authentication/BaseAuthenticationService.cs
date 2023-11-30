@@ -1,9 +1,9 @@
-﻿using MessagingCorp.Database.API;
+﻿using MessagingCorp.Common.Logger;
+using MessagingCorp.Database.API;
 using MessagingCorp.EntityManagement.API;
 using MessagingCorp.Providers.API;
 using MessagingCorp.Services.API;
 using MessagingCorp.Services.Core;
-using MessagingCorp.Utils.Logger;
 using Ninject;
 using Serilog;
 using Serilog.Events;
@@ -35,7 +35,7 @@ namespace MessagingCorp.Services.Authentication
 
         public async Task<bool> AuthenticateUser(string uid, string uniquePassword)
         {
-            if (!cachingProvider.IsUserInCache(uid, uniquePassword))
+            if (!cachingProvider.IsUserInCacheWithPassword(uid, uniquePassword))
             {
                 // todo: crypto management hash password 
                 var surrealId = userManagement.GetSurrealIdFromUid(uid);
@@ -46,7 +46,7 @@ namespace MessagingCorp.Services.Authentication
                 if (await databaseAccess.AuthenticateUser(surrealId, uniquePassword))
                 {
                     Logger.Information($"Got user {uid} authenticated from db!");
-                    if (!cachingProvider.IsUserInCache(uid, uniquePassword))
+                    if (!cachingProvider.IsUserInCacheWithPassword(uid, uniquePassword))
                         cachingProvider.AddUserToCache(uid, uniquePassword);
 
                     return true;
@@ -59,6 +59,16 @@ namespace MessagingCorp.Services.Authentication
         }
 
         public Task<bool> AuthorizeForLobby(string uid, string agreedKey)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<bool> IsUserAuthenticated(string uid)
+        {
+            return await Task.Run(() => cachingProvider.IsUserInCache(uid));
+        }
+
+        public Task<bool> IsUserAuthorizedForLobby(string uid, string lobbyId)
         {
             throw new NotImplementedException();
         }

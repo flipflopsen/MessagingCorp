@@ -1,0 +1,114 @@
+{
+	"info": {
+		"_postman_id": "f3bd0a20-c264-4709-8242-94ca7c94149b",
+		"name": "MessagingCorp",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "18895173"
+	},
+	"item": [
+		{
+			"name": "RegisterUser",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "UserId == 0;\r\nChallenge == Challenge;\r\nAction == register;\r\nAdditionalData == UmFuZHk7TG9sMTIzO0NoYWxsZW5nZTo6OlNvbWVNZXNzYWdlQ29ycENvbnN0YW50Ojo6Q2hhbGxlbmdl;"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/genposter",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"genposter"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "LoginUser",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "UserId == 0;\r\nChallenge == Challenge;\r\nAction == register;\r\nAdditionalData == UmFuZHk7TG9sMTIzO0NoYWxsZW5nZTo6OlNvbWVNZXNzYWdlQ29ycENvbnN0YW50Ojo6Q2hhbGxlbmdl;"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/genposter",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"genposter"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SendFriendRequest",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "UserId == GrownCorp-User-5c2e0fda69f2;\r\nChallenge == Challenge;\r\nAction == addfriendreq;\r\nAdditionalData == R3Jvd25Db3JwLVVzZXItNDU4MDNkMTIxOGIzO0NoYWxsZW5nZTo6OlNvbWVNZXNzYWdlQ29ycENvbnN0YW50Ojo6Q2hhbGxlbmdl;"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8009/genposter",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8009",
+					"path": [
+						"genposter"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "AcceptFriendRequest",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "UserId == GrownCorp-User-45803d1218b3;\r\nChallenge == Challenge;\r\nAction == register;\r\nAdditionalData == R3Jvd25Db3JwLVVzZXItNWMyZTBmZGE2OWYyO0NoYWxsZW5nZTo6OlNvbWVNZXNzYWdlQ29ycENvbnN0YW50Ojo6Q2hhbGxlbmdl;"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8009/genposter",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8009",
+					"path": [
+						"genposter"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

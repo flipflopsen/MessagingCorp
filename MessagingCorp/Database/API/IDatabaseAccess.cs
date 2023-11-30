@@ -1,5 +1,5 @@
-﻿using MessagingCorp.BO;
-using MessagingCorp.Database.DAO;
+﻿using MessagingCorp.Database.DAO;
+using MessagingCorp.EntityManagement.BO;
 
 namespace MessagingCorp.Database.API
 {
@@ -15,5 +15,7 @@ namespace MessagingCorp.Database.API
         Task<User> GetUser(string uid);
 
         Task<IEnumerable<UserRecordDao>> GetAllUsers();
+
+        Task<bool> UpdateUser(User user);
     }
 }

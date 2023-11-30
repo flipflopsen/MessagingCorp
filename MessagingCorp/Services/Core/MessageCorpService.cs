@@ -1,12 +1,8 @@
-﻿using MessagingCorp.Configuration;
-using MessagingCorp.Configuration.BO;
+﻿using MessagingCorp.Common.Logger;
 using MessagingCorp.Modules;
-using MessagingCorp.Utils.Enumeration;
-using MessagingCorp.Utils.Logger;
 using Ninject;
 using Serilog;
 using Serilog.Events;
-using System.Collections.Concurrent;
 
 namespace MessagingCorp.Services.Core
 {
@@ -14,7 +10,6 @@ namespace MessagingCorp.Services.Core
     {
         private static readonly ILogger Logger = Log.Logger.ForContextWithConfig<MessageCorpService>("./Logs/MessageCorpService.log", true, LogEventLevel.Debug);
 
-        private readonly ConcurrentDictionary<KernelLevel, IKernel> kernels = new ConcurrentDictionary<KernelLevel, IKernel>();
         private IKernel? _kernel;
         private MessageCorpDriver? driver;
 
@@ -23,49 +18,15 @@ namespace MessagingCorp.Services.Core
         #region Initialization
         public void InitializeService()
         {
-            InitializeDiKernels(KernelLevel.Driver);
+            InitializeDiKernel();
 
             InitializeServices();
         }
 
         #region DI-Init
 
-        private void InitializeDiKernels(KernelLevel kernelLevel)
+        private void InitializeDiKernel()
         {
-
-            /*
-            var commonServiceModule = new MessageCorpServiceModule();
-
-            switch (kernelLevel)
-            {
-                case KernelLevel.Auth:
-                    {
-                        kernels[KernelLevel.Auth] = new StandardKernel(
-                            commonServiceModule,
-                            new CryptoModule(),
-                            new CachingModule(),
-                            new DatabaseModule(false)
-                        );
-                        break;
-                    }
-                case KernelLevel.Driver:
-                    {
-                        kernels[KernelLevel.Driver] = new StandardKernel(
-                            commonServiceModule,
-                            new CryptoModule(),
-                            new CachingModule(),
-                            new DatabaseModule(false),
-                            new AuthenticationModule(),
-                            new UserManagementModule()
-                        );
-
-                        break;
-                    }
-            }
-
-            messageCorpConfiguration = kernels[KernelLevel.Driver].Get<IMessageCorpConfiguration>();
-            */
-
             _kernel = new StandardKernel(
                             new MessageCorpServiceModule(),
                             new CryptoModule(),

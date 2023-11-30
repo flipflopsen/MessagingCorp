@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using MessagingCorp.BO;
 using MessagingCorp.Database.DAO;
+using MessagingCorp.EntityManagement.BO;
 using System;
 using System.Collections.Generic;
 using System.Linq;

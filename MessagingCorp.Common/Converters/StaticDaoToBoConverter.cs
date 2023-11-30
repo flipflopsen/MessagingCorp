@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace MessagingCorp.Utils.Converters
+namespace MessagingCorp.Common.Converters
 {
     public class StaticDaoToBoConverter<TSource, TDestination>
     where TSource : class

@@ -1,8 +1,8 @@
-﻿using Serilog.Events;
+﻿using MessagingCorp.Common.Logger;
 using Serilog;
+using Serilog.Events;
 using System.Net;
 using System.Text;
-using MessagingCorp.Utils.Logger;
 
 namespace MessagingCorp.Common.HttpStuff
 {

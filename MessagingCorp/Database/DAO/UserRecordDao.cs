@@ -1,4 +1,5 @@
-﻿using SurrealDb.Net.Models;
+﻿using MessagingCorp.EntityManagement.BO;
+using SurrealDb.Net.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,16 +18,21 @@ namespace MessagingCorp.Database.DAO
 
         public List<string> FriendList { get; set; }
 
-        public List<string> PendingFriendRequests { get; set; }
+        public List<FriendRequest> PendingFriendRequests { get; set; }
 
-        public UserRecordDao(string userId, string userName, string password, List<string> activeLobbyParticipations = null!, List<string> friendList = null!, List<string> pendingFriendRequests = null!)
+        public UserRecordDao()
+        {
+            // Default constructor for conversion
+        }
+
+        public UserRecordDao(string userId, string userName, string password, List<string> activeLobbyParticipations = null!, List<string> friendList = null!, List<FriendRequest> pendingFriendRequests = null!)
         {
             UserId = userId;
             UserName = userName;
             Password = password;
             ActiveLobbyParticipations = activeLobbyParticipations ?? new List<string>();
             FriendList = friendList ?? new List<string>();
-            PendingFriendRequests = pendingFriendRequests ?? new List<string>();
+            PendingFriendRequests = pendingFriendRequests ?? new List<FriendRequest>();
         }
     }
 }

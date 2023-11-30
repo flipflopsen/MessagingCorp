@@ -1,11 +1,6 @@
-﻿using Serilog.Events;
+﻿using MessagingCorp.Common.Logger;
 using Serilog;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MessagingCorp.Utils.Logger;
+using Serilog.Events;
 
 namespace MessagingCorp.Common.EventBus
 {

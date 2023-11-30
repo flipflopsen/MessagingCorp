@@ -1,13 +1,8 @@
 ﻿using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Compact;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace MessagingCorp.Utils.Logger
+namespace MessagingCorp.Common.Logger
 {
     public static class Loggerino
     {

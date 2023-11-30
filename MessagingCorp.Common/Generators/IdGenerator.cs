@@ -1,4 +1,4 @@
-﻿namespace MessagingCorp.Utils
+﻿namespace MessagingCorp.Common.Generators
 {
     public static class IdGenerator
     {

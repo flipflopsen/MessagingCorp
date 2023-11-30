@@ -1,6 +1,6 @@
-﻿using MessagingCorp.BO;
-using MessagingCorp.Database.API;
+﻿using MessagingCorp.Database.API;
 using MessagingCorp.Database.DAO;
+using MessagingCorp.EntityManagement.BO;
 using MessagingCorp.Services.API;
 using System;
 using System.Collections.Generic;
@@ -46,6 +46,11 @@ namespace MessagingCorp.Database
         }
 
         public Task<IEnumerable<UserRecordDao>> GetAllUsers()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> UpdateUser(User user)
         {
             throw new NotImplementedException();
         }

@@ -9,8 +9,11 @@ namespace MessagingCorp.Providers.API
 {
     public interface ICachingProvider
     {
-        bool IsUserInCache(string uid, string pass);
+        bool IsUserInCacheWithPassword(string uid, string pass);
 
         void AddUserToCache(string uid, string pass);
+
+        bool IsUserInCache(string uid);
+        void RemoveUserFromCache(string uid);
     }
 }

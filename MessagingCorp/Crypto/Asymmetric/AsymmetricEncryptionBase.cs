@@ -1,4 +1,4 @@
-﻿using MessagingCorp.BO;
+﻿using MessagingCorp.EntityManagement.BO;
 using System;
 using System.Collections.Generic;
 using System.Linq;

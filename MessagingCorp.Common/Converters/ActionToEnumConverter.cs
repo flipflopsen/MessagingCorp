@@ -1,6 +1,6 @@
-﻿using MessagingCorp.Utils.Enumeration;
+﻿using MessagingCorp.Common.Enumeration;
 
-namespace MessagingCorp.Utils.Converters
+namespace MessagingCorp.Common.Converters
 {
     public static class ActionToEnumConverter
     {
@@ -23,6 +23,8 @@ namespace MessagingCorp.Utils.Converters
                 case "sendmsg": return CorpUserAction.SendMessage;
                 case "updmsg": return CorpUserAction.UpdateMessage;
                 case "purge": return CorpUserAction.PurgeUser;
+                case "addfriendreq": return CorpUserAction.AddFriendRequest;
+                case "acceptfriendreq": return CorpUserAction.AcceptFriendRequest;
                 default: return CorpUserAction.Invalid;
             }
         }

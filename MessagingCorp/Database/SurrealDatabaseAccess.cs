@@ -1,21 +1,15 @@
-﻿using MessagingCorp.BO;
+﻿using MessagingCorp.Common.Converters;
+using MessagingCorp.Common.Logger;
 using MessagingCorp.Configuration;
 using MessagingCorp.Configuration.BO;
-using MessagingCorp.Services;
+using MessagingCorp.Database.API;
+using MessagingCorp.Database.DAO;
+using MessagingCorp.EntityManagement.BO;
 using Microsoft.Extensions.DependencyInjection;
 using Ninject;
-using Serilog.Events;
 using Serilog;
-using SurrealDB.Configuration;
-using SurrealDB.Driver.Rpc;
-using SurrealDB.Models;
-using MessagingCorp.Utils.Logger;
-using MessagingCorp.Database.DAO;
-using MessagingCorp.Utils.Converters;
-using SurrealDB.Models.Result;
-using SurrealDB.Driver.Rest;
+using Serilog.Events;
 using SurrealDb.Net;
-using MessagingCorp.Database.API;
 
 namespace MessagingCorp.Database
 {
@@ -96,10 +90,28 @@ namespace MessagingCorp.Database
                 //TODO: Utilize automapper or sth
                 var usr = conv.Convert(select);
 
+                usr.SurrealId = select.Id!;
+
                 return usr;
             }
             Logger.Warning($"Failed to get user with uid: {uid}");
             return null!;
+        }
+
+        public async Task<bool> UpdateUser(User user)
+        {
+            await _client.Connect();
+            await _client.Use(_dbConfig.NameSpace, _dbConfig.UserDatabaseName);
+
+            var conv = new StaticDaoToBoConverter<User, UserRecordDao>();
+            var dao = conv.Convert(user);
+
+            dao.Id = user.SurrealId;
+
+            var retr = await _client.Upsert(dao);
+
+            return retr.Id!.Id == user.SurrealId.Id;
+
         }
 
         public async Task<bool> IsUidExistent(string uid)

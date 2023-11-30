@@ -1,10 +1,10 @@
-﻿using Serilog;
-using Serilog.Events;
+﻿using MessagingCorp.Common.Logger;
 using MessagingCorp.Configuration.BO;
+using MessagingCorp.Configuration.Exceptions;
+using Serilog;
+using Serilog.Events;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using MessagingCorp.Utils.Logger;
-using MessagingCorp.Configuration.Exceptions;
 
 namespace MessagingCorp.Configuration.Helper
 {

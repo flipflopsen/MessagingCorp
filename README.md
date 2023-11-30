@@ -34,31 +34,33 @@ This project focuses on implementing a Messenger Service with fully user-control
 
 ## Open To-Do's
 
+- **User Management:**
+  - Let users create a Token for adding friends more easy. [X]
 - **Lobby Management:**
-  - Create lobbies, allow users to join them, and manage database objects.
+  - Create lobbies, allow users to join them, and manage database objects. []
 
 - **Crypto and Key Management/Provider:**
-  - The key provider should securely save and access user keys for crypto.
-  - The crypto provider executes the encryption.
+  - The key provider should securely save and access user keys for crypto. []
+  - The crypto provider executes the encryption. []
 
 - **Actions:**
-  - Start a new conversation (with another user ID).
-  - Create new symmetric/asymmetric keys, IV, salt, etc., and make it configurable from the client side.
+  - Start a new conversation (with another user ID). []
+  - Create new symmetric/asymmetric keys, IV, salt, etc., and make it configurable from the client side. []
 
 - **More Crypto:**
   - Implement a variety of asymmetric and symmetric algorithms, including:
     - **Symmetric:**
-      - Serpent
-      - Chacha_twenty
-      - Others that could be fast and effective
+      - Serpent []
+      - Chacha_twenty []
+      - Others that could be fast and effective []
     - **Asymmetric:**
-      - RSA (Important!)
-      - ECC
-      - DSA
-      - ECDSA
-      - NTRUEncrypt (could get very hard)
-      - McEliece
-      - More post-quantum algorithms
+      - RSA (Important!) []
+      - ECC []
+      - DSA []
+      - ECDSA []
+      - NTRUEncrypt (could get very hard) []
+      - McEliece []
+      - More post-quantum algorithms []
 
 
 ## How-To's
@@ -214,3 +216,14 @@ public class KeyProvider : IKeyProvider
 1. General Password
 2. Custom Key for Symm enc, IV and salt same with random gen
 3. Pub/Priv Keypair for asymm enc
+
+## Request Format for actions
+The only real thing which changes is the "AdditionalData" field, which is some encrypted and Base64ed string, which looks like:
+`Some;Additional;Data;Challenge:::SomeMessageCorpConstant:::Challenge`
+
+The following strings are replacements for **Some;Additional;Data**, depending on the action
+
+- Register User:
+    - `username;password`
+- SendFriendRequest and AcceptFriendRequest:
+    - `targetUid`, vice versa

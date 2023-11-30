@@ -5,11 +5,12 @@ using MessagingCorp.Database.API;
 using MessagingCorp.EntityManagement.API;
 using MessagingCorp.Providers.API;
 using MessagingCorp.Services.API;
-using MessagingCorp.Utils.Logger;
+using MessagingCorp.Common.Logger;
 using Ninject;
 using Serilog;
 using Serilog.Events;
 using System.Text;
+using MessagingCorp.Common.Enumeration;
 
 namespace MessagingCorp.Services.Core
 {
@@ -48,7 +49,7 @@ namespace MessagingCorp.Services.Core
         #region Initialization
         public void InitializeDriver()
         {
-            //controller.InitializeCorpHttp();
+            // noop atm
         }
 
         public async Task RunDriver()
@@ -65,14 +66,14 @@ namespace MessagingCorp.Services.Core
         {
             await Task.Run(async () =>
             {
-                if (message.Action == Utils.Enumeration.CorpUserAction.Invalid)
+                if (message.Action == CorpUserAction.Invalid)
                 {
                     Logger.Error("[MessageCorpDriver] > Action field from CorpMessage was invalid in handler!");
                 }
 
                 switch (message.Action)
                 {
-                    case Utils.Enumeration.CorpUserAction.RegisterUser:
+                    case CorpUserAction.RegisterUser:
                         {
                             Logger.Information("[MessageCorpDriver] > Got registerUser-Message for user: " + message);
 
@@ -83,7 +84,7 @@ namespace MessagingCorp.Services.Core
                             await busPovider!.GetMessageBus().Publish(new InternalHttpResponse() { IsSuccess = true, Userid = message.OriginatorUserId!, ResponseString = message.OriginatorUserId!});
                             break;
                         }
-                    case Utils.Enumeration.CorpUserAction.LoginUser:
+                    case CorpUserAction.LoginUser:
                         {
                             Logger.Information($"[MessageCorpDriver] > Got login-Message for user: {message.OriginatorUserId}");
 
@@ -103,13 +104,40 @@ namespace MessagingCorp.Services.Core
                             }
                             break;
                         }
-                    case Utils.Enumeration.CorpUserAction.AddFriendRequest:
+                    case CorpUserAction.AddFriendRequest:
                         {
                             Logger.Information("[MessageCorpDriver] > Got addFriend-Message for user: " + message);
+                            message = PopulateMessageByAction(message);
+
+                            if (!await authenticator!.IsUserAuthenticated(message.OriginatorUserId!))
+                            {
+                                await busPovider!.GetMessageBus().Publish(new InternalHttpResponse() { IsSuccess = false, Userid = message.OriginatorUserId!, ResponseString = "not authenticated" });
+                                break;
+                            }
+
+                            await userManagement!.SendFriendRequest(message.OriginatorUserId!, message.TargetUserId);
+
+                            await busPovider!.GetMessageBus().Publish(new InternalHttpResponse() { IsSuccess = true, Userid = message.OriginatorUserId!, ResponseString = $"sent friend request to {message.TargetUserId}" });
 
                             break;
                         }
-                    case Utils.Enumeration.CorpUserAction.SendMessage:
+                    case CorpUserAction.AcceptFriendRequest:
+                        {
+                            Logger.Information("[MessageCorpDriver] > Got acceptFriend-Message for user: " + message);
+
+                            message = PopulateMessageByAction(message);
+                            if (!await authenticator!.IsUserAuthenticated(message.OriginatorUserId!))
+                            {
+                                await busPovider!.GetMessageBus().Publish(new InternalHttpResponse() { IsSuccess = false, Userid = message.OriginatorUserId!, ResponseString = "not authenticated" });
+                                break;
+                            }
+
+                            await userManagement!.AcceptFriendRequest(message.OriginatorUserId!, message.TargetUserId);
+                            await busPovider!.GetMessageBus().Publish(new InternalHttpResponse() { IsSuccess = true, Userid = message.OriginatorUserId!, ResponseString = $"accepted friend request from {message.TargetUserId}" });
+
+                            break;
+                        }
+                    case CorpUserAction.SendMessage:
                         {
                             byte[] testKey = Encoding.UTF8.GetBytes("01234567890123456789012345678901");
                             byte[] testIV = Encoding.UTF8.GetBytes("0123456789012345");
@@ -129,6 +157,26 @@ namespace MessagingCorp.Services.Core
             });
         }
 
+        #endregion
+
+        #region Helper
+
+        public CorpMessage PopulateMessageByAction(CorpMessage corpMessage)
+        {
+            switch (corpMessage.Action)
+            {
+                case CorpUserAction.AddFriendRequest:
+                case CorpUserAction.AcceptFriendRequest:
+                    {
+                        corpMessage.TargetUserId = corpMessage.AdditionalData.Replace(";", "");
+                        break;
+                    }
+                default:
+                    break;
+            }
+
+            return corpMessage;
+        }
         #endregion
     }
 }

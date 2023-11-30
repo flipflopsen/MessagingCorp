@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using MessagingCorp.Common.Enumeration;
+using System.Net;
 
 namespace MessagingCorp.BO.BusMessages
 {
@@ -8,7 +9,7 @@ namespace MessagingCorp.BO.BusMessages
         public string OriginatorUserName { get; set; } = string.Empty;
         public string TargetUserId { get; set; } = string.Empty;
 
-        public Utils.Enumeration.CorpUserAction Action { get; set; }
+        public CorpUserAction Action { get; set; }
         public bool IsSymm {  get; set; }
         public bool IsAsymm {  get; set; }
 

@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MessagingCorp.BO.BusMessages;
 
-namespace MessagingCorp.BO
+namespace MessagingCorp.EntityManagement.BO
 {
     public class Lobby
     {
@@ -18,9 +18,9 @@ namespace MessagingCorp.BO
 
         public Lobby()
         {
-            _usersInLobby = new ();
-            _messagesInLobby = new ();
-            _messagesToDeliver = new ();
+            _usersInLobby = new();
+            _messagesInLobby = new();
+            _messagesToDeliver = new();
         }
     }
 }

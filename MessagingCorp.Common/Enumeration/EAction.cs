@@ -1,4 +1,4 @@
-﻿namespace MessagingCorp.Utils.Enumeration
+﻿namespace MessagingCorp.Common.Enumeration
 {
     public enum CorpUserAction
     {
@@ -25,5 +25,12 @@
         SendMessage,
         UpdateMessage,
         PurgeUser
+    }
+
+    public enum CorpActionDirection
+    {
+        Incoming,
+        Outgoing,
+        None
     }
 }

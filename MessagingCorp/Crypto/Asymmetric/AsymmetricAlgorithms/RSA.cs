@@ -1,5 +1,4 @@
-﻿using MessagingCorp.BO;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,6 +8,7 @@ using Org.BouncyCastle.Crypto.Generators;
 using Org.BouncyCastle.Security;
 using System.Security.Cryptography;
 using Newtonsoft.Json;
+using MessagingCorp.EntityManagement.BO;
 
 namespace MessagingCorp.Crypto.Asymmetric.AsymmetricAlgorithms
 {
