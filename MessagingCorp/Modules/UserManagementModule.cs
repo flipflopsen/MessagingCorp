@@ -9,7 +9,7 @@ namespace MessagingCorp.Modules
         // needs database and maybe encryption
         public override void Load()
         {
-            Bind<IUserManagement>().To<UserManagement>();
+            Bind<IUserManagement>().To<UserManagement>().InSingletonScope();
         }
     }
 

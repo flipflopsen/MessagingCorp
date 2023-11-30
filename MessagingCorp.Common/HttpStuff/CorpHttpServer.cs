@@ -6,13 +6,14 @@ using MessagingCorp.Utils.Logger;
 
 namespace MessagingCorp.Common.HttpStuff
 {
-    public class CorpHttpServer
+    public class CorpHttpServer : IDisposable
     {
         private static readonly ILogger Logger = Log.Logger.ForContextWithConfig<CorpHttpServer>("./Logs/CorpHttpServer.log", true, LogEventLevel.Debug);
 
         private readonly Dictionary<string, Func<HttpListenerContext, Task<HttpListenerResponse>>> registeredEndpoints;
         private readonly HttpListener listener;
         private bool isRunning;
+        private bool disposedValue;
 
         public CorpHttpServer()
         {
@@ -49,7 +50,7 @@ namespace MessagingCorp.Common.HttpStuff
         public async Task StartAsync()
         {
             listener.Start();
-            Logger.Debug("CorpHttpServer is listening");
+            Logger.Debug("[CorpHttpServer] > CorpHttpServer is listening");
 
             isRunning = true;
 
@@ -62,21 +63,25 @@ namespace MessagingCorp.Common.HttpStuff
 
         private async Task ProcessRequestAsync(HttpListenerContext context)
         {
-            Logger.Information("Got some request!");
             var request = context.Request;
             var response = context.Response;
-            var path = request.Url.AbsolutePath.ToLower();
+            var path = request!.Url!.AbsolutePath.ToLower();
             var clientIp = context.Request.RemoteEndPoint.Address.ToString();
 
             if (path == null)
             {
-                Logger.Warning($"(NullPath) Caught a weird request on endpoint: - from IP: {clientIp}");
+                Logger.Warning($"[CorpHttpServer] > (NullPath) Caught a weird request on endpoint: - from IP: {clientIp}");
+
                 response.StatusCode = (int)HttpStatusCode.Forbidden;
                 response.StatusDescription = "Forbidden";
+
                 var responseText = "Forbidden, Endpoint and IP logged.";
                 var responseData = Encoding.UTF8.GetBytes(responseText);
+
                 response.ContentLength64 = responseData.Length;
+
                 await response.OutputStream.WriteAsync(responseData, 0, responseData.Length);
+
                 return;
             }
 
@@ -87,36 +92,49 @@ namespace MessagingCorp.Common.HttpStuff
                 var responseTask = handler(context);
 
                 // Await and send the response when the handler completes
-                var httpResponse = await responseTask;
-                //SendHttpResponseAsync(httpResponse!);
+                _ = await responseTask;
             }
             else
             {
-                Logger.Warning($"Caught a weird request on endpoint: {path} from IP: {clientIp}");
+                Logger.Warning($"[CorpHttpServer] > Caught a weird request on endpoint: {path} from IP: {clientIp}");
                 response.StatusCode = (int)HttpStatusCode.Forbidden;
                 response.StatusDescription = "Forbidden";
+
                 var responseText = "Forbidden, Endpoint and IP logged.";
                 var responseData = Encoding.UTF8.GetBytes(responseText);
+
                 response.ContentLength64 = responseData.Length;
+
                 await response.OutputStream.WriteAsync(responseData, 0, responseData.Length);
             }
 
             response.Close();
         }
 
-        private void SendHttpResponseAsync(HttpListenerResponse response)
-        {
-            byte[] buffer = Encoding.UTF8.GetBytes("noice");
-            response.OutputStream.Write(buffer, 0, buffer.Length);
-            response.OutputStream.Close();
-        }
-
-
         public void Stop()
         {
             isRunning = false;
             listener.Stop();
             listener.Close();
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    Stop();
+                }
+
+                disposedValue = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 }

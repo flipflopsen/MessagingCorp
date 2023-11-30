@@ -17,7 +17,7 @@ namespace MessagingCorp.Modules
     {
         public override void Load()
         {
-            Bind<IMessageCorpConfiguration>().To<MessagingCorpConfig>();
+            Bind<IMessageCorpConfiguration>().To<MessagingCorpConfig>().InSingletonScope();
             Bind<IMessageCorpController>().To<MessageCorpController>();
             Bind<IMessageBusProvider>().To<MessageBusProvider>().InSingletonScope();
         }

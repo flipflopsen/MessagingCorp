@@ -12,5 +12,7 @@ namespace MessagingCorp.BO.BusMessages
         public string Userid { get; set; } = string.Empty;
         public string Username { get; set; } = string.Empty;
 
+        public string ResponseString { get; set; } = string.Empty;
+
     }
 }

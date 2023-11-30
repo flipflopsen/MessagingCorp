@@ -7,6 +7,8 @@
         // User Management
         RegisterUser,
         LoginUser,
+        AddFriendRequest,
+        AcceptFriendRequest,
 
         // Lobby Management
         CreateLobby,

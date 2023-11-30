@@ -10,45 +10,67 @@ namespace MessagingCorp.BO
 {
     public class User
     {
-        // todo: profilbild
+        // todo: make fields private and utilize automapper
+        public List<string> ActiveLobbyParticipations { get; set; }
+        public List<string> FriendList { get; set; }
+        public List<string> PendingFriendRequests { get; set; }
 
         public string UserId { get; set; }
         public string UserName { get; set; }
         public string Password { get; set; }
+        public string? SurrealId { get; set; }
 
-        public List<string> ActiveLobbyParticipations { get; set; }
-
-        //private readonly List<string> _activeLobbyParticipations;
-
-        public User() { }
-
-        public User(string uid, string nickname, string password)
-        {
-            UserId = uid;
-            UserName = nickname;
-            //_activeLobbyParticipations = new List<string>();
-            ActiveLobbyParticipations = new List<string>();
-            Password = password;
+        public User() 
+        { 
+            // Default constructor for conversion
         }
 
-        public User(string uid, string nickname, string password, List<string> activeLobbyParticipations)
+        public User(string userId, string userName, string password, List<string> activeLobbyParticipations = null!, List<string> friendList = null!, List<string> pendingFriendRequests = null!)
         {
-            UserId = uid;
-            UserName = nickname;
-            //_activeLobbyParticipations = new List<string>();
-            ActiveLobbyParticipations = activeLobbyParticipations;
+            UserId = userId;
+            UserName = userName;
             Password = password;
+            ActiveLobbyParticipations = activeLobbyParticipations ?? new List<string>();
+            FriendList = friendList ?? new List<string>();
+            PendingFriendRequests = pendingFriendRequests ?? new List<string>();
         }
 
         public bool IsUserInLobby(string lobbyId) 
         {
-            //return _activeLobbyParticipations.Contains(lobbyId);
             return ActiveLobbyParticipations.Contains(lobbyId);
+        }
+
+        public void AddLobbyParticipation(string lobbyId)
+        {
+            if (ActiveLobbyParticipations.Contains(lobbyId))
+                return;
+            ActiveLobbyParticipations.Add(lobbyId);
+        }
+
+        public void RemoveLobbyParticipation(string lobbyId)
+        {
+            if (!ActiveLobbyParticipations.Contains(lobbyId))
+                return;
+            ActiveLobbyParticipations.Remove(lobbyId);
         }
 
         public bool ValidateUserIntegrity()
         {
             return !(UserId.IsNullOrEmpty() && UserName.IsNullOrEmpty() && Password.IsNullOrEmpty());
+        }
+
+        public void AddFriend(string friendId)
+        {
+            if (FriendList.Contains(friendId)) 
+                return; 
+            FriendList.Add(friendId);
+        }
+
+        public void RemoveFriend(string friendId)
+        {
+            if (!FriendList.Contains(friendId))
+                return;
+            FriendList.Remove(friendId);
         }
     }
 }

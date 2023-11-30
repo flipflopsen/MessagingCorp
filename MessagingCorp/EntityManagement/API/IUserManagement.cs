@@ -9,8 +9,10 @@ namespace MessagingCorp.EntityManagement.API
 {
     public interface IUserManagement
     {
-        void AddUser(string uid, string username, string password);
-        void RemoveUser(string uid);
-        User GetUser(string uid);
+        Task AddUser(string uid, string username, string password);
+        Task<bool> RemoveUser(string uid);
+        Task<User> GetUser(string uid);
+
+        string GetSurrealIdFromUid(string uid);
     }
 }

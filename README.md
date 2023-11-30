@@ -90,7 +90,7 @@ docker network create surrealnet
 
 2. Start DB
 ```shell
-sudo docker run --rm --pull always  --name messagingcorp-main -p 8082:8082 -v /home/lance/Development/MessagingCorp/Database:/mydata surrealdb/surrealdb:latest start --log trace --user corpadmin --pass lulz123 -b 0.0.0.0:8082 --auth
+sudo docker run --rm --pull always --name messagingcorp-main -p 8082:8082 -v /home/lance/Development/MessagingCorp/Database:/mydata surrealdb/surrealdb:latest start --log trace --user corpadmin --pass lulz123 -b 0.0.0.0:8082 --auth
 ```
 
 3. Inspect network and get IP:

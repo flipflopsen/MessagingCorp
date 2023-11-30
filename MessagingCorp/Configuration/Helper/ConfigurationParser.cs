@@ -14,7 +14,10 @@ namespace MessagingCorp.Configuration.Helper
 
         public BaseConfiguration Parse(string filePath)
         {
-            Logger.Information($"Starting to read Log-File: {filePath}");
+            string directory = Path.GetDirectoryName(filePath)!;
+            string file = Path.GetFileName(filePath);
+
+            Logger.Information($"[ConfigurationParser] > Starting to read Configuration-File: {file}");
 
             var lines = File.ReadLines(filePath);
 
@@ -30,7 +33,7 @@ namespace MessagingCorp.Configuration.Helper
                 {
                     // Handle the configuration name
                     string configName = line.Substring("Conf:=:".Length).Trim();
-                    Logger.Information($"Configuration Name: {configName}");
+                    //Logger.Information($"Configuration Name: {configName}");
 
                     switch (configName)
                     {

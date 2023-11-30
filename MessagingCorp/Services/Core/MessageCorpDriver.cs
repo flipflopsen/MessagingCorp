@@ -1,6 +1,7 @@
 ﻿using MessagingCorp.BO.BusMessages;
 using MessagingCorp.Configuration;
 using MessagingCorp.Crypto.Symmetric;
+using MessagingCorp.Database.API;
 using MessagingCorp.EntityManagement.API;
 using MessagingCorp.Providers.API;
 using MessagingCorp.Services.API;
@@ -52,7 +53,6 @@ namespace MessagingCorp.Services.Core
 
         public async Task RunDriver()
         {
-            await databaseAccess!.SetupSurrealTables();
             busPovider!.GetMessageBus().Subscribe<CorpMessage>(async (message, tok) => await HandleCorpMessage(message));
             await controller.RunCorpHttp();
         }
@@ -63,35 +63,50 @@ namespace MessagingCorp.Services.Core
 
         private async Task HandleCorpMessage(CorpMessage message)
         {
-            await Task.Run(() =>
+            await Task.Run(async () =>
             {
                 if (message.Action == Utils.Enumeration.CorpUserAction.Invalid)
                 {
                     Logger.Error("[MessageCorpDriver] > Action field from CorpMessage was invalid in handler!");
-                    throw new NullReferenceException("Action field from CorpMessage was null in handler!");
                 }
 
                 switch (message.Action)
                 {
                     case Utils.Enumeration.CorpUserAction.RegisterUser:
                         {
+                            Logger.Information("[MessageCorpDriver] > Got registerUser-Message for user: " + message);
+
                             var usernamePasswordSplit = message.AdditionalData.Split(";");
-                            Logger.Information("Got registerUsermessage for user: " + message);
-                            userManagement!.AddUser(message.OriginatorUserId!, usernamePasswordSplit[0], usernamePasswordSplit[1]);
-                            Logger.Information("going to register user..");
 
-                            var usr = userManagement!.GetUser(message.OriginatorUserId!);
+                            await userManagement!.AddUser(message.OriginatorUserId!, usernamePasswordSplit[0], usernamePasswordSplit[1]);
 
-                            busPovider!.GetMessageBus().Publish(new InternalHttpResponse() { IsSuccess = true, Userid = message.OriginatorUserId! });
+                            await busPovider!.GetMessageBus().Publish(new InternalHttpResponse() { IsSuccess = true, Userid = message.OriginatorUserId!, ResponseString = message.OriginatorUserId!});
                             break;
                         }
                     case Utils.Enumeration.CorpUserAction.LoginUser:
                         {
-                            Logger.Information("Got registerUsermessage for user: " + message.OriginatorUserId);
-                            if (authenticator!.AuthenticateUser(message.OriginatorUserId, message.Password))
-                            {
+                            Logger.Information($"[MessageCorpDriver] > Got login-Message for user: {message.OriginatorUserId}");
 
+                            var usernamePasswordSplit = message.AdditionalData.Split(";");
+                            message.Password = usernamePasswordSplit[1];
+                            message.OriginatorUserName = usernamePasswordSplit[0];
+
+                            if (await authenticator!.AuthenticateUser(message.OriginatorUserId, message.Password))
+                            {
+                                Logger.Information($"[MessageCorpDriver] > User {message.OriginatorUserId} ({message.OriginatorUserName}) authenticated successfully!");
+                                await busPovider!.GetMessageBus().Publish(new InternalHttpResponse() { IsSuccess = true, Userid = message.OriginatorUserId!, ResponseString = "login successful"});
                             }
+                            else
+                            {
+                                Logger.Warning($"[MessageCorpDriver] > Failed to authenticate user with uid: {message.OriginatorUserId}!");
+                                await busPovider!.GetMessageBus().Publish(new InternalHttpResponse() { IsSuccess = false, Userid = message.OriginatorUserId!, ResponseString = "login failed" });
+                            }
+                            break;
+                        }
+                    case Utils.Enumeration.CorpUserAction.AddFriendRequest:
+                        {
+                            Logger.Information("[MessageCorpDriver] > Got addFriend-Message for user: " + message);
+
                             break;
                         }
                     case Utils.Enumeration.CorpUserAction.SendMessage:

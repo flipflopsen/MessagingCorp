@@ -1,4 +1,6 @@
 ﻿using MessagingCorp.BO;
+using MessagingCorp.Database.API;
+using MessagingCorp.Database.DAO;
 using MessagingCorp.Services.API;
 using System;
 using System.Collections.Generic;
@@ -14,16 +16,16 @@ namespace MessagingCorp.Database
 
         public DatabaseAccessMock() { }
 
-        public Task AddUser(string uid, string username, string pass)
+        public async Task<string> AddUser(string uid, string username, string pass)
         {
             users.Add(uid, new User(uid, username, pass));
-            return Task.CompletedTask;
+            return string.Empty;
         }
 
-        public Task RemoveUser(string uid) 
+        public async Task<bool> RemoveUser(string uid) 
         {
             users.Remove(uid);
-            return Task.CompletedTask;
+            return true;
         }
         public Task<User> GetUser(string uid)
         {
@@ -41,6 +43,11 @@ namespace MessagingCorp.Database
         public Task<bool> IsUidExistent(string uid)
         {
             return new Task<bool>(() => true);
+        }
+
+        public Task<IEnumerable<UserRecordDao>> GetAllUsers()
+        {
+            throw new NotImplementedException();
         }
     }
 }

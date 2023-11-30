@@ -2,7 +2,6 @@
 using MessagingCorp.Configuration;
 using MessagingCorp.Configuration.BO;
 using MessagingCorp.Services;
-using MessagingCorp.Services.API;
 using Microsoft.Extensions.DependencyInjection;
 using Ninject;
 using Serilog.Events;
@@ -16,6 +15,7 @@ using MessagingCorp.Utils.Converters;
 using SurrealDB.Models.Result;
 using SurrealDB.Driver.Rest;
 using SurrealDb.Net;
+using MessagingCorp.Database.API;
 
 namespace MessagingCorp.Database
 {
@@ -46,9 +46,9 @@ namespace MessagingCorp.Database
 
             _client = new(options);
         }
-        
 
-        public async Task AddUser(string uid, string username, string pass)
+        // return surrealId
+        public async Task<string> AddUser(string uid, string username, string pass)
         {
             try
             {
@@ -58,30 +58,22 @@ namespace MessagingCorp.Database
                 if (await IsUidExistent(uid))
                 {
                     Logger.Error("Tried to create a user with already existing uid!");
-                    //TODO: Custom exception handling
-                    return;
+                    return string.Empty;
                 }
                 
-                var dao = new UserRecordDao(uid, username, pass, new List<string>() { "0" });
+                var dao = new UserRecordDao(uid, username, pass);
 
-                var created = await _client.Create($"{USER_TABLE}", dao);
+                var created = await _client.Create(USER_TABLE, dao);
 
-                var select = await _client.Select<UserRecordDao>($"{USER_TABLE}:{uid}");
-                if (select.Any())
-                {
-                    var usr = select.First();
+                Logger.Information($"Created user with uid: {uid}, and SurrealId: {created.Id!.Id}");
 
-                    // TODO: replace with automapper
-                    var converter = new StaticDaoToBoConverter<UserRecordDao, User>();
-                    var ret = converter.Convert(usr);
-
-                }
-                Logger.Information("Created user with uid: " + uid);
+                return created.Id!.Id;
             
             }
             catch (Exception e)
             {
                 Logger.Error("Exception thrown: " + e.Message);
+                return string.Empty;
             }
         }
 
@@ -96,17 +88,17 @@ namespace MessagingCorp.Database
             await _client.Connect();
             await _client.Use(_dbConfig.NameSpace, _dbConfig.UserDatabaseName);
 
-            var select = await _client.Select<UserRecordDao>($"{USER_TABLE}:{uid}");
-            if (select.Any())
+            var select = await _client.Select<UserRecordDao>(USER_TABLE, uid);
+            if (select != null)
             {
-                var result = select.First();
                 var conv = new StaticDaoToBoConverter<UserRecordDao, User>();
 
-                var usr = conv.Convert(result);
+                //TODO: Utilize automapper or sth
+                var usr = conv.Convert(select);
 
                 return usr;
             }
-            Logger.Warning("Failed to get user with uid: " + uid);
+            Logger.Warning($"Failed to get user with uid: {uid}");
             return null!;
         }
 
@@ -115,9 +107,24 @@ namespace MessagingCorp.Database
             return await GetUser(uid) != null;
         }
 
-        public async Task RemoveUser(string uid)
+        public async Task<bool> RemoveUser(string uid)
         {
-            throw new NotImplementedException();
+            await _client.Connect();
+            await _client.Use(_dbConfig.NameSpace, _dbConfig.UserDatabaseName);
+            return await _client.Delete(USER_TABLE, uid);
+        }
+
+        public async Task<IEnumerable<UserRecordDao>> GetAllUsers()
+        {
+            await _client.Connect();
+            await _client.Use(_dbConfig.NameSpace, _dbConfig.UserDatabaseName);
+
+            var users = await _client.Select<UserRecordDao>($"{USER_TABLE}");
+
+            if (users != null && users.Any())
+                return users;
+            else
+                return null!;
         }
     }
 }

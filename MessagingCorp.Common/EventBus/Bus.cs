@@ -1,13 +1,18 @@
-﻿using System;
+﻿using Serilog.Events;
+using Serilog;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MessagingCorp.Utils.Logger;
 
 namespace MessagingCorp.Common.EventBus
 {
     internal sealed class Bus : IBus
     {
+        private static readonly ILogger Logger = Log.Logger.ForContextWithConfig<Bus>("./Logs/MessageCorpBus.log", true, LogEventLevel.Debug);
+
         private readonly List<ISubscription> _subscriptions;
 
         public Bus()
@@ -18,6 +23,7 @@ namespace MessagingCorp.Common.EventBus
         /// <inheritdoc />
         public IObservable<T> Observe<T>()
         {
+            //Logger.Debug("[MessageCorpBus] > Observing something new..");
             var subscription = new ObservableSubscription<T>();
             subscription.Disposed += (s, e) => _subscriptions.Remove(subscription);
             _subscriptions.Add(subscription);
@@ -27,6 +33,7 @@ namespace MessagingCorp.Common.EventBus
 
         public async Task Publish(object message, CancellationToken cancellationToken = default)
         {
+            //Logger.Debug("[MessageCorpBus] > Publishing a new message of type: " + message.GetType());
             var temp = _subscriptions.ToList();
 
             foreach (var subscription in temp)
@@ -35,6 +42,7 @@ namespace MessagingCorp.Common.EventBus
 
                 if (subscription.CanProcessMessage(message))
                 {
+                    //Logger.Debug("[MessageCorpBus] > Published message can be processed!");
                     await subscription.ProcessMessage(message, cancellationToken);
                 }
             }

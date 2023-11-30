@@ -61,12 +61,14 @@ namespace MessagingCorp.Services.Core
         private async Task<HttpListenerResponse> GenericGetHandler(HttpListenerContext context)
         {
             Logger.Warning($"[MessageCorpDriver] > Detected unwanted visit GET from: {context.Request.RemoteEndPoint.Address}");
+            await Task.Delay(1);
             return null!;
         }
 
         private async Task<HttpListenerResponse> GenericPostHandler(HttpListenerContext context)
         {
-            Logger.Warning($"[MessageCorpDriver] > Detected unwanted visit in POST from: {context.Request.RemoteEndPoint.Address}");
+            IDisposable observerDisposable;
+            Logger.Information($"[MessageCorpController] > Received POST-Request from: {context.Request.RemoteEndPoint.Address}");
 
             var request = context.Request;
             var response = context.Response;
@@ -84,46 +86,60 @@ namespace MessagingCorp.Services.Core
                 {
                     var content = reader.ReadToEnd();
                     var reqForm = postParser.Parse(content);
-                    var cleanData = RemoveVerificationFromAdditionalData(reqForm.AdditionalData);
+                    var cleanData = RemoveVerificationFromAdditionalData(reqForm!.AdditionalData);
 
+                    
                     var msg = new CorpMessage()
                     {
-                        OriginatorUserId = IdGenerator.GenerateNewUserUid(),
+                        OriginatorUserId = reqForm.UserId == "0" ? IdGenerator.GenerateNewUserUid() : reqForm.UserId,
                         AdditionalData = cleanData,
                         Action = ActionToEnumConverter.ConvertToAction(reqForm!.Action)
                     };
 
+                    // TODO: can this cause shit when a lot of requests occur at the same time?
                     // Because the action handling happens in the Driver, we Observe for an InternalHttpResponse here, which represents the result of the operation.
-                    bus!.GetMessageBus().Observe<InternalHttpResponse>().Subscribe(
+                    observerDisposable = bus!.GetMessageBus().Observe<InternalHttpResponse>().Subscribe(
                         onNext: value =>
                         {
                             if (value.IsSuccess)
                             {
                                 response.StatusCode = 200;
                                 response.StatusDescription = "OK";
-                                response.OutputStream.Write(Encoding.UTF8.GetBytes(value.Userid), 0, Encoding.UTF8.GetBytes(value.Userid).Length);
+                                response.OutputStream.Write(Encoding.UTF8.GetBytes(value.ResponseString), 0, Encoding.UTF8.GetBytes(value.ResponseString).Length);
                             }
                             else
                                 response.StatusCode = 404;
 
+                            //Logger.Debug("[MessageCorpController] > sem gets released cuz onNext");
                             chillSem.Release();
                         },
-                        onError: error => chillSem.Release(),
-                        onCompleted: () => chillSem.Release());
+                        onError: error =>
+                            {
+                                //Logger.Debug("[MessageCorpController] > sem gets released cuz onError");
+                                chillSem.Release();
+                            },
+                        onCompleted: () =>
+                            {
+                                //Logger.Debug("[MessageCorpController] > sem gets released cuz onCompleted");
+                                chillSem.Release();
+                            });
 
                     // then we publish 
                     await bus!.GetMessageBus().Publish(msg);
                 }
             }
 
-            // wait async for the sem, released by the observable
+            // TODO: can this cause shit when a lot of requests occur at the same time?
+            //Logger.Debug("[MessageCorpController] > Waiting for chillsem");
             await chillSem.WaitAsync();
             chillSem = new SemaphoreSlim(0);
+            observerDisposable!.Dispose();
             return response;
         }
 
         #endregion
 
+        #region Helpers
         private string RemoveVerificationFromAdditionalData(string additionalData)
         {
             // access challenge str
@@ -137,5 +153,6 @@ namespace MessagingCorp.Services.Core
             return additionalData.Replace(str, "");
         }
 
+        #endregion
     }
 }

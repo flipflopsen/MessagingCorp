@@ -5,6 +5,7 @@ namespace MessagingCorp.BO.BusMessages
     public class CorpMessage
     {
         public string OriginatorUserId { get; set; } = string.Empty;
+        public string OriginatorUserName { get; set; } = string.Empty;
         public string TargetUserId { get; set; } = string.Empty;
 
         public Utils.Enumeration.CorpUserAction Action { get; set; }

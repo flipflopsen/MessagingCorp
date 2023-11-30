@@ -15,26 +15,25 @@ namespace MessagingCorp.Services.Core
         private static readonly ILogger Logger = Log.Logger.ForContextWithConfig<MessageCorpService>("./Logs/MessageCorpService.log", true, LogEventLevel.Debug);
 
         private readonly ConcurrentDictionary<KernelLevel, IKernel> kernels = new ConcurrentDictionary<KernelLevel, IKernel>();
+        private IKernel? _kernel;
         private MessageCorpDriver? driver;
-
-        private IMessageCorpConfiguration? messageCorpConfiguration;
 
         private bool _isInitialized = false;
 
         #region Initialization
-        public async Task InitializeService()
+        public void InitializeService()
         {
             InitializeDiKernels(KernelLevel.Driver);
 
-            var dbConfig = (DatabaseConfiguration)messageCorpConfiguration!.GetConfiguration(MessageCorpConfigType.Database);
-
-            await InitializeServices();
+            InitializeServices();
         }
 
         #region DI-Init
 
         private void InitializeDiKernels(KernelLevel kernelLevel)
         {
+
+            /*
             var commonServiceModule = new MessageCorpServiceModule();
 
             switch (kernelLevel)
@@ -45,7 +44,7 @@ namespace MessagingCorp.Services.Core
                             commonServiceModule,
                             new CryptoModule(),
                             new CachingModule(),
-                            new DatabaseModule()
+                            new DatabaseModule(false)
                         );
                         break;
                     }
@@ -55,7 +54,7 @@ namespace MessagingCorp.Services.Core
                             commonServiceModule,
                             new CryptoModule(),
                             new CachingModule(),
-                            new DatabaseModule(),
+                            new DatabaseModule(false),
                             new AuthenticationModule(),
                             new UserManagementModule()
                         );
@@ -65,16 +64,25 @@ namespace MessagingCorp.Services.Core
             }
 
             messageCorpConfiguration = kernels[KernelLevel.Driver].Get<IMessageCorpConfiguration>();
+            */
+
+            _kernel = new StandardKernel(
+                            new MessageCorpServiceModule(),
+                            new CryptoModule(),
+                            new CachingModule(),
+                            new DatabaseModule(false),
+                            new AuthenticationModule(),
+                            new UserManagementModule());
         }
         #endregion
 
         #region Service-Init
-        private async Task InitializeServices()
+        private void InitializeServices()
         {
             // Create all the services here with the kernels and create a new "Driver" class, which orchestrates these
 
             // Driver init
-            driver = kernels[KernelLevel.Driver].Get<MessageCorpDriver>();
+            driver = _kernel.Get<MessageCorpDriver>();
             _isInitialized = true;
         }
 

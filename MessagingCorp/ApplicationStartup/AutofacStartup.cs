@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using MessagingCorp.Configuration;
 using MessagingCorp.Database;
+using MessagingCorp.Database.API;
 using MessagingCorp.EntityManagement;
 using MessagingCorp.EntityManagement.API;
 using MessagingCorp.Modules;
@@ -26,7 +27,7 @@ namespace MessagingCorp.ApplicationStartup
                     new MessageCorpServiceModule(),
                     new CryptoModule(),
                     new CachingModule(),
-                    new DatabaseModule(),
+                    new DatabaseModule(false),
                     new AuthenticationModule(),
                     new UserManagementModule()
                     );

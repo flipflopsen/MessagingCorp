@@ -15,12 +15,18 @@ namespace MessagingCorp.Database.DAO
 
         public List<string> ActiveLobbyParticipations { get; set; }
 
-        public UserRecordDao(string userId, string userName, string password, List<string> activeLobbyParticipations)
+        public List<string> FriendList { get; set; }
+
+        public List<string> PendingFriendRequests { get; set; }
+
+        public UserRecordDao(string userId, string userName, string password, List<string> activeLobbyParticipations = null!, List<string> friendList = null!, List<string> pendingFriendRequests = null!)
         {
             UserId = userId;
             UserName = userName;
             Password = password;
-            ActiveLobbyParticipations = activeLobbyParticipations;
+            ActiveLobbyParticipations = activeLobbyParticipations ?? new List<string>();
+            FriendList = friendList ?? new List<string>();
+            PendingFriendRequests = pendingFriendRequests ?? new List<string>();
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿using MessagingCorp.Providers.API;
+﻿using MessagingCorp.Database.API;
+using MessagingCorp.EntityManagement.API;
+using MessagingCorp.Providers.API;
 using MessagingCorp.Services.API;
 using MessagingCorp.Services.Core;
 using MessagingCorp.Utils.Logger;
@@ -12,30 +14,36 @@ namespace MessagingCorp.Services.Authentication
     {
         private static readonly ILogger Logger = Log.Logger.ForContextWithConfig<MessageCorpDriver>("./Logs/MessageCorpDriver.log", true, LogEventLevel.Debug);
 
-        private IDatabaseAccess databaseAccess;
-        private ICachingProvider cachingProvider;
-        //private ICryptoProvider cryptoProvider;
+        private readonly IDatabaseAccess databaseAccess;
+        private readonly ICachingProvider cachingProvider;
+        private readonly IUserManagement userManagement;
+        private readonly ICryptoProvider cryptoProvider;
 
-        public BaseAuthenticationService(IKernel kernel)
+        [Inject]
+        public BaseAuthenticationService(
+            IDatabaseAccess databaseAccess,
+            ICachingProvider cachingProvider,
+            IUserManagement userManagement,
+            ICryptoProvider cryptoProvider
+            )
         {
-            databaseAccess = kernel.Get<IDatabaseAccess>();
-            cachingProvider = kernel.Get<ICachingProvider>();
-            //cryptoProvider = kernel.Get<ICryptoProvider>();
+            this.databaseAccess = databaseAccess;
+            this.cachingProvider = cachingProvider;
+            this.userManagement = userManagement;
+            this.cryptoProvider = cryptoProvider;
         }
 
-        public void InitializeService(IKernel kernel)
-        {
-            databaseAccess = kernel.Get<IDatabaseAccess>();
-            cachingProvider = kernel.Get<ICachingProvider>();
-            //cryptoProvider = kernel.Get<ICryptoProvider>();
-        }
-
-        public bool AuthenticateUser(string uid, string uniquePassword)
+        public async Task<bool> AuthenticateUser(string uid, string uniquePassword)
         {
             if (!cachingProvider.IsUserInCache(uid, uniquePassword))
             {
                 // todo: crypto management hash password 
-                if (databaseAccess.AuthenticateUser(uid, uniquePassword).Result)
+                var surrealId = userManagement.GetSurrealIdFromUid(uid);
+                if (surrealId == string.Empty)
+                {
+                    Logger.Warning($"[BaseAuthenticationService] > User with uid {uid} doesnt have a surreal id!");
+                }
+                if (await databaseAccess.AuthenticateUser(surrealId, uniquePassword))
                 {
                     Logger.Information($"Got user {uid} authenticated from db!");
                     if (!cachingProvider.IsUserInCache(uid, uniquePassword))
@@ -50,7 +58,7 @@ namespace MessagingCorp.Services.Authentication
             return true;
         }
 
-        public bool AuthorizeForLobby(string uid, string agreedKey)
+        public Task<bool> AuthorizeForLobby(string uid, string agreedKey)
         {
             throw new NotImplementedException();
         }
