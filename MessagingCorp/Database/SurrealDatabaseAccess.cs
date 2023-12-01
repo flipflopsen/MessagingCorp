@@ -1,6 +1,4 @@
-﻿using AutoMapper;
-using MessagingCorp.Common.Converters;
-using MessagingCorp.Common.Logger;
+﻿using MessagingCorp.Common.Logger;
 using MessagingCorp.Configuration;
 using MessagingCorp.Configuration.BO;
 using MessagingCorp.Converters;
@@ -12,7 +10,6 @@ using Ninject;
 using Serilog;
 using Serilog.Events;
 using SurrealDb.Net;
-using static MessagingCorp.DAO.RecordDAOs;
 
 namespace MessagingCorp.Database
 {
