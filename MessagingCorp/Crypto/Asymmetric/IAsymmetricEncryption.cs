@@ -1,4 +1,5 @@
-﻿using MessagingCorp.EntityManagement.BO;
+﻿using MessagingCorp.Crypto.Symmetric;
+using MessagingCorp.EntityManagement.BO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,8 @@ namespace MessagingCorp.Crypto.Asymmetric
 {
     public interface IAsymmetricEncryption
     {
-        void GenerateNewKeyPair(User user, int keySize);
+        string DecryptMessage(EEncryptionStrategyAsymmetric strategy, string fromUserUid, string toUserUid);
+        string EncryptMessage(EEncryptionStrategyAsymmetric strategy, string fromUserUid, string toUserUid);
+        void GenerateNewKeyPair(EEncryptionStrategyAsymmetric strategy, string forUserUid);
     }
 }

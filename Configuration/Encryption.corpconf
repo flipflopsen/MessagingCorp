@@ -1,5 +1,14 @@
 Conf:=:Encryption
-ConfOpMode::Full
+ConfOpMode::Partial
+# Set conf mode Partial because not fully implemented!
 
 $-RequestSecurityConstant => "SomeMessageCorpConstant";
 $-RequestSecurityChallenge => "Challenge";
+#$-DefaultCorpAesMethod => "AES_GCM";
+#$-DefaultCorpAesKeySize => "1024";
+#$-DefaultCorpAesKey => "keysAreNiceAndShouldBeGood";
+#$-DefaultCorpAesIv => (Location | B64ed bytes as str);
+#$-DefaultCorpAsymMethod = "RSA";
+#$-DefaultCorpRsaKeySize => "2048"
+#$-DefaultCorpRsaPubKey => (Location | B64ed bytes as str);
+#$-DefaultCorpRsaPrivKey => (Location | B64ed bytes as str);

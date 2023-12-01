@@ -34,9 +34,11 @@ namespace MessagingCorp.Providers
                 case EEncryptionStrategySymmetric.AES_GCM:
                 case EEncryptionStrategySymmetric.AES_TWOFIVESIX:
                     {
-
+                        return string.Empty;
                         break;
                     }
+                default:
+                    return string.Empty;
             }
         }
     }

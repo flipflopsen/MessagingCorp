@@ -33,7 +33,10 @@ This project focuses on implementing a Messenger Service with fully user-control
 
 
 ## Open To-Do's
-
+- **Load Balancing**
+  - Populate from DB or sth at startup and keep most of the stuff in enc memory
+  - reduce database calls and work from memory as mich as possible, or make it configurable
+  - check memory usage and when it gets too high, update database and make some space
 - **User Management:**
   - Let users create a Token for adding friends more easy. [X]
 - **Lobby Management:**
@@ -61,6 +64,17 @@ This project focuses on implementing a Messenger Service with fully user-control
       - NTRUEncrypt (could get very hard) []
       - McEliece []
       - More post-quantum algorithms []
+
+## Security Mechanisms
+- HSM
+    - Actually kinda dumb because this project should be easily deployable etc.
+    - so no HSM
+- DPAPI
+    - Windows Data Protection API
+    - Good thing for Backend, bad thing for cross platform clients.
+    - Good thing for securing stuff on single BE server (which is great for this purpose)
+- What else?
+    - Yeah we need sth for the clients, dunno yet. (BE still WIP and conceptual)
 
 
 ## How-To's

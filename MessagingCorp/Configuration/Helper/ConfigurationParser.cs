@@ -17,7 +17,7 @@ namespace MessagingCorp.Configuration.Helper
             string directory = Path.GetDirectoryName(filePath)!;
             string file = Path.GetFileName(filePath);
 
-            Logger.Information($"[ConfigurationParser] > Starting to read Configuration-File: {file}");
+            Logger.Information($"[ConfigurationParser] > Starting to read Configuration-File: {filePath}");
 
             var lines = File.ReadLines(filePath);
 
@@ -29,6 +29,13 @@ namespace MessagingCorp.Configuration.Helper
 
             foreach (var line in lines)
             {
+                if (line.StartsWith('#'))
+                {
+                    //Logger.Debug($"got comment: {line}");
+                    // allow comments starting with # in conf files.
+                    continue;
+                }
+
                 if (line.StartsWith("Conf:=:"))
                 {
                     // Handle the configuration name
@@ -38,7 +45,7 @@ namespace MessagingCorp.Configuration.Helper
                     switch (configName)
                     {
                         case "Database":
-                            Log.Information("Got DatabaseConfig!");
+                            //Logger.Debug("Got DatabaseConfig!");
                             configuration = new DatabaseConfiguration();
                             configuration.ConfigurationName = configName;
                             break;
@@ -47,6 +54,7 @@ namespace MessagingCorp.Configuration.Helper
                             configuration.ConfigurationName = configName;
                             break;
                         case "Encryption":
+                            //Logger.Debug("Got EncryptionConfig!");
                             configuration = new EncryptionConfiguration();
                             configuration.ConfigurationName = configName;
                             break;
@@ -70,13 +78,11 @@ namespace MessagingCorp.Configuration.Helper
                     switch (opMode)
                     {
                         case "Full": isFullOpMode = true; break;
-                        case "Partial": isFullOpMode = false; break;
+                        case "Partial": isFullOpMode = false; Logger.Information("IsPartial = nice"); break;
                         default:
                             throw new ConfigParsingException(
                                 "Failed to determine correct ConfOpMode for config, valid id {Full/Partial}!");
                     }
-                    Log.Information("DatabaseConfig is ConfOpMode: Full");
-                    isFullOpMode = true;
                 }
                 else if (line.StartsWith("$-+"))
                 {
@@ -147,10 +153,14 @@ namespace MessagingCorp.Configuration.Helper
                 }
             }
 
-            if (isFullOpMode && IsAnyFieldNull(configuration!))
+            if (lines.Any() && isFullOpMode)
             {
-                Log.Error("Failed to parse configuration in FullOpMode, you forgot some field!");
-                throw new ConfigParsingException("Failed to parse configuration in FullOpMode, you forgot some field!");
+                if (IsAnyFieldNull(configuration!))
+                {
+                    Logger.Error("Failed to parse configuration in FullOpMode, you forgot some field!");
+                    throw new ConfigParsingException("Failed to parse configuration in FullOpMode, you forgot some field!");
+
+                }
             }
 
             return configuration!;

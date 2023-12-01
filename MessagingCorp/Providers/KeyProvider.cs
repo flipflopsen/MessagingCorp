@@ -19,17 +19,27 @@ namespace MessagingCorp.Providers
         { 
         }
 
-        public byte[] GetPrivateKey(EEncryptionStrategyAsymmetric strat, string uid)
+        byte[] IKeyProvider.GetPrivateKey(EEncryptionStrategyAsymmetric strategyAsymmetric, string uid)
         {
             throw new NotImplementedException();
         }
 
-        public byte[] GetPublicKey(EEncryptionStrategyAsymmetric strat, string uid)
+        byte[] IKeyProvider.GetPublicKey(EEncryptionStrategyAsymmetric strategyAsymmetric, string uid)
         {
             throw new NotImplementedException();
         }
 
-        public byte[] GetSymmetricKey(EEncryptionStrategySymmetric strat, string uid)
+        byte[] IKeyProvider.GetSymmetricKey(EEncryptionStrategySymmetric strategySymmetric, string uid)
+        {
+            throw new NotImplementedException();
+        }
+
+        void IKeyProvider.SetAsymmetricKeySpecs(EEncryptionStrategyAsymmetric strategyAsymmetric, byte[] privKey, byte[] pubKey, byte[] salt)
+        {
+            throw new NotImplementedException();
+        }
+
+        void IKeyProvider.SetSymmetricKeySpecs(EEncryptionStrategySymmetric strategySymmetric, byte[] key, byte[] salt, byte[] iv)
         {
             throw new NotImplementedException();
         }
