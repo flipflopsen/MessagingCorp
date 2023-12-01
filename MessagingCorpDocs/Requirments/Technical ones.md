@@ -1,0 +1,3 @@
+- Asymmetric RSA Encryption outer
+- AES-256 inner, but interchangeble and cascading by user preference
+- keys are by choice of user on client or server 

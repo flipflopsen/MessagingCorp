@@ -1,0 +1,3 @@
+- Message logging configureable (1 DAY MAX, NO DB LOGS)
+- UI: No screenshots allowed
+- Maybe no "addFriends", if yes then only for a timespan

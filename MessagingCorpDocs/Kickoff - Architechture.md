@@ -1,0 +1,5 @@
+- C# Backend
+- API with some sort of auth
+- need to think about authentication for selected users
+- what database (maybe surreal)
+- restful api

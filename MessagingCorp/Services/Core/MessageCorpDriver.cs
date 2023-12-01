@@ -77,6 +77,8 @@ namespace MessagingCorp.Services.Core
                         {
                             Logger.Information("[MessageCorpDriver] > Got registerUser-Message for user: " + message);
 
+                            message = PopulateMessageByAction(message);
+
                             var usernamePasswordSplit = message.AdditionalData.Split(";");
 
                             await userManagement!.AddUser(message.OriginatorUserId!, usernamePasswordSplit[0], usernamePasswordSplit[1]);

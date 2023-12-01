@@ -1,0 +1,1 @@
+- Users (1:1) or Lobby have to agree to on contract of used encryption methods

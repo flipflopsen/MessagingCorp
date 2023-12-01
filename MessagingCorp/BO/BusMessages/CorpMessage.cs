@@ -1,4 +1,5 @@
 ﻿using MessagingCorp.Common.Enumeration;
+using MessagingCorp.Crypto.Symmetric;
 using System.Net;
 
 namespace MessagingCorp.BO.BusMessages
@@ -12,6 +13,9 @@ namespace MessagingCorp.BO.BusMessages
         public CorpUserAction Action { get; set; }
         public bool IsSymm {  get; set; }
         public bool IsAsymm {  get; set; }
+
+        public EEncryptionStrategySymmetric SymEncStrat {  get; set; }
+        public EEncryptionStrategyAsymmetric AsyncEncStrat { get; set; }
 
         public string Password { get; set; } = string.Empty;
         public string Challenge { get; set; } = string.Empty;

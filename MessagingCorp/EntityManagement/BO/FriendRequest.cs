@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace MessagingCorp.EntityManagement.BO
 {
+    /*
     public class FriendRequest
     {
         public CorpActionDirection Direction { get; set; }
@@ -19,4 +20,5 @@ namespace MessagingCorp.EntityManagement.BO
         }
 
     }
+    */
 }

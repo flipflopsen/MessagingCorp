@@ -29,7 +29,15 @@ namespace MessagingCorp.Providers
 
         public string EncryptSymmetric(EEncryptionStrategySymmetric cryptoStrategy, string uid, string message)
         {
-            throw new NotImplementedException();
+            switch (cryptoStrategy)
+            {
+                case EEncryptionStrategySymmetric.AES_GCM:
+                case EEncryptionStrategySymmetric.AES_TWOFIVESIX:
+                    {
+
+                        break;
+                    }
+            }
         }
     }
 }

@@ -1,0 +1,2 @@
+- Generate random crypt key at startup as a way to store key information in db without bigger security concerns
+- or make configurable key 

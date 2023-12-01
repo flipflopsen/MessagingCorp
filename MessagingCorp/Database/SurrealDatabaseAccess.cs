@@ -1,7 +1,9 @@
-﻿using MessagingCorp.Common.Converters;
+﻿using AutoMapper;
+using MessagingCorp.Common.Converters;
 using MessagingCorp.Common.Logger;
 using MessagingCorp.Configuration;
 using MessagingCorp.Configuration.BO;
+using MessagingCorp.Converters;
 using MessagingCorp.Database.API;
 using MessagingCorp.Database.DAO;
 using MessagingCorp.EntityManagement.BO;
@@ -10,6 +12,7 @@ using Ninject;
 using Serilog;
 using Serilog.Events;
 using SurrealDb.Net;
+using static MessagingCorp.DAO.RecordDAOs;
 
 namespace MessagingCorp.Database
 {
@@ -85,12 +88,10 @@ namespace MessagingCorp.Database
             var select = await _client.Select<UserRecordDao>(USER_TABLE, uid);
             if (select != null)
             {
-                var conv = new StaticDaoToBoConverter<UserRecordDao, User>();
+                var mapper = AutoMapperConfig.Configure();
+                var usr = mapper.Map<User>(select!);
 
-                //TODO: Utilize automapper or sth
-                var usr = conv.Convert(select);
-
-                usr.SurrealId = select.Id!;
+                usr!.SetSurrealId(select.Id!);
 
                 return usr;
             }
@@ -103,8 +104,8 @@ namespace MessagingCorp.Database
             await _client.Connect();
             await _client.Use(_dbConfig.NameSpace, _dbConfig.UserDatabaseName);
 
-            var conv = new StaticDaoToBoConverter<User, UserRecordDao>();
-            var dao = conv.Convert(user);
+            var mapper = AutoMapperConfig.Configure();
+            var dao = mapper.Map<UserRecordDao>(user);
 
             dao.Id = user.SurrealId;
 
@@ -126,6 +127,7 @@ namespace MessagingCorp.Database
             return await _client.Delete(USER_TABLE, uid);
         }
 
+        // Do not use this method
         public async Task<IEnumerable<UserRecordDao>> GetAllUsers()
         {
             await _client.Connect();

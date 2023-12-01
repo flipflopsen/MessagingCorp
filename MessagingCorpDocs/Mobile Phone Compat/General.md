@@ -1,0 +1,3 @@
+- use [[dotNET Shared Projects]]
+- or make a web app and wrap into an app
+	- could get difficult because of keygen etc.

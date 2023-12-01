@@ -1,0 +1,1 @@
+- Needs to create a new encryption token from given user input string (first input)

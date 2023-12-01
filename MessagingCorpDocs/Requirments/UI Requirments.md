@@ -1,0 +1,1 @@
+Purge button, delete everything instantly
